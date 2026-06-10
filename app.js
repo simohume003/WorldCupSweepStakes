@@ -1,4 +1,5 @@
 const ESPN_URL = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
+const ESPN_STANDINGS_URL = 'https://site.web.api.espn.com/apis/v2/sports/soccer/fifa.world/standings';
 const TOTAL_WORLD_CUP_TEAMS = 48;
 
 const fallbackFlags = {
@@ -35,46 +36,120 @@ const fallbackFlags = {
   "United States": "https://flagcdn.com/w80/us.png",
   "Wales": "https://flagcdn.com/w80/gb-wls.png",
   "Italy": "https://flagcdn.com/w80/it.png",
-"Chile": "https://flagcdn.com/w80/cl.png",
-"Colombia": "https://flagcdn.com/w80/co.png",
-"Paraguay": "https://flagcdn.com/w80/py.png",
-"Scotland": "https://flagcdn.com/w80/gb-sct.png",
-"Costa Rica": "https://flagcdn.com/w80/cr.png",
-"Panama": "https://flagcdn.com/w80/pa.png",
-"Cameroon": "https://flagcdn.com/w80/cm.png",
-"Nigeria": "https://flagcdn.com/w80/ng.png",
-"Algeria": "https://flagcdn.com/w80/dz.png",
-"Egypt": "https://flagcdn.com/w80/eg.png",
-"New Zealand": "https://flagcdn.com/w80/nz.png",
-"Qatar": "https://flagcdn.com/w80/qa.png",
-"UAE": "https://flagcdn.com/w80/ae.png",
-"United Arab Emirates": "https://flagcdn.com/w80/ae.png",
-"Iraq": "https://flagcdn.com/w80/iq.png",
+  "Chile": "https://flagcdn.com/w80/cl.png",
+  "Colombia": "https://flagcdn.com/w80/co.png",
+  "Paraguay": "https://flagcdn.com/w80/py.png",
+  "Scotland": "https://flagcdn.com/w80/gb-sct.png",
+  "Costa Rica": "https://flagcdn.com/w80/cr.png",
+  "Panama": "https://flagcdn.com/w80/pa.png",
+  "Cameroon": "https://flagcdn.com/w80/cm.png",
+  "Nigeria": "https://flagcdn.com/w80/ng.png",
+  "Algeria": "https://flagcdn.com/w80/dz.png",
+  "Egypt": "https://flagcdn.com/w80/eg.png",
+  "New Zealand": "https://flagcdn.com/w80/nz.png",
+  "Qatar": "https://flagcdn.com/w80/qa.png",
+  "UAE": "https://flagcdn.com/w80/ae.png",
+  "United Arab Emirates": "https://flagcdn.com/w80/ae.png",
+  "Iraq": "https://flagcdn.com/w80/iq.png",
+  "Turkey": "https://flagcdn.com/w80/tr.png",
+  "Haiti": "https://flagcdn.com/w80/ht.png",
+"Czechia": "https://flagcdn.com/w80/cz.png",
+"Czech Republic": "https://flagcdn.com/w80/cz.png",
+"Uzbekistan": "https://flagcdn.com/w80/uz.png",
+"Bosnia and Herzegovina": "https://flagcdn.com/w80/ba.png",
+"Bosnia-Herzegovina": "https://flagcdn.com/w80/ba.png",
+"Cape Verde": "https://flagcdn.com/w80/cv.png",
+"Ivory Coast": "https://flagcdn.com/w80/ci.png",
+"Côte d'Ivoire": "https://flagcdn.com/w80/ci.png",
+"Norway": "https://flagcdn.com/w80/no.png",
+"Jordan": "https://flagcdn.com/w80/jo.png",
+"Austria": "https://flagcdn.com/w80/at.png",
+"Sweden": "https://flagcdn.com/w80/se.png",
+"Democratic Republic of the Congo": "https://flagcdn.com/w80/cd.png",
+"DR Congo": "https://flagcdn.com/w80/cd.png",
+"Congo DR": "https://flagcdn.com/w80/cd.png",
+"Curaçao": "https://flagcdn.com/w80/cw.png",
+"Curacao": "https://flagcdn.com/w80/cw.png",
+"Turkey": "https://flagcdn.com/w80/tr.png",
+"Türkiye": "https://flagcdn.com/w80/tr.png"
 };
 
-// Players are correct. Teams are placeholders for now and can be replaced after the real family draw.
 const playerShells = [
-  { name: 'Simon', color: '#0f8a3a', avatar: '🧑🏻' },
+  { name: 'Simon', color: '#0f8a3a', avatar: '🧑🏼' },
   { name: 'Dad', color: '#1258d6', avatar: '👨🏻' },
-  { name: 'Mum', color: '#7a2fd4', avatar: '👩🏻' },
+  { name: 'Mum', color: '#7a2fd4', avatar: '👩' },
   { name: 'Andy', color: '#e86f00', avatar: '👨🏼' },
   { name: 'Jay', color: '#d92d20', avatar: '🧑🏼' },
   { name: 'Karl', color: '#008c95', avatar: '👨🏻' }
 ];
 
-// When you have the real draw, replace this whole object.
-// Use ESPN team display names where possible, e.g. "United States" not "USA".
-const manualDraw = null;
-/* Example later:
 const manualDraw = {
-  Simon: ['Brazil', 'England', 'Japan', 'Morocco', 'Switzerland', 'Croatia', 'Australia', 'Spain'],
-  Dad: ['France', 'Germany', 'United States', 'Portugal', 'Netherlands', 'Belgium', 'Korea Republic', 'Canada'],
-  Mum: ['Mexico', 'Norway', 'Sweden', 'Ghana', 'Denmark', 'Senegal', 'Uruguay', 'Ecuador'],
-  Andy: ['Argentina', 'South Africa', 'Serbia', 'Turkey', 'Poland', 'Saudi Arabia', 'Tunisia', 'Iran'],
-  Jay: ['Italy', 'Chile', 'Colombia', 'Paraguay', 'Scotland', 'Wales', 'Costa Rica', 'Panama'],
-  Karl: ['Cameroon', 'Nigeria', 'Algeria', 'Egypt', 'New Zealand', 'Qatar', 'UAE', 'Iraq']
+  Simon: [
+    'Argentina',
+    'Belgium',
+    'Uruguay',
+    'Turkey',
+    'Mexico',
+    'Ecuador',
+    'Tunisia',
+    'Haiti'
+  ],
+
+  Mum: [
+    'Spain',
+    'Croatia',
+    'Egypt',
+    'Czechia',
+    'Australia',
+    'South Africa',
+    'Paraguay',
+    'Uzbekistan'
+  ],
+
+  Dad: [
+    'France',
+    'Germany',
+    'Senegal',
+    'Switzerland',
+    'Canada',
+    'Bosnia and Herzegovina',
+    'Saudi Arabia',
+    'Cape Verde'
+  ],
+
+  Andy: [
+    'England',
+    'Morocco',
+    'Ivory Coast',
+    'Ghana',
+    'New Zealand',
+    'South Korea',
+    'Qatar',
+    'Panama'
+  ],
+
+  Jay: [
+    'Brazil',
+    'Netherlands',
+    'Norway',
+    'Colombia',
+    'Japan',
+    'Algeria',
+    'Iran',
+    'Jordan'
+  ],
+
+  Karl: [
+    'Portugal',
+    'Scotland',
+    'Austria',
+    'Sweden',
+    'USA',
+    'Democratic Republic of the Congo',
+    'Iraq',
+    'Curaçao'
+  ]
 };
-*/
 
 const prizeRules = {
   winner: 40,
@@ -104,7 +179,17 @@ const teamAliases = {
   'USA': 'United States',
   'USMNT': 'United States',
   'South Korea': 'Korea Republic',
-  'Korea': 'Korea Republic'
+  'Korea': 'Korea Republic',
+  'UAE': 'United Arab Emirates',
+
+  'Türkiye': 'Turkey',
+  'Czech Republic': 'Czechia',
+  'Bosnia-Herzegovina': 'Bosnia and Herzegovina',
+  'Cape Verde Islands': 'Cape Verde',
+  "Côte d'Ivoire": 'Ivory Coast',
+  'DR Congo': 'Democratic Republic of the Congo',
+  'Congo DR': 'Democratic Republic of the Congo',
+  'Curacao': 'Curaçao'
 };
 
 let players = playerShells.map(player => ({ ...player, teams: [] }));
@@ -141,8 +226,12 @@ function getTeamKey(name = '') {
 
 function setApiStatus(mode, message) {
   const status = document.getElementById('apiStatus');
+  if (!status) return;
+
   const dot = status.querySelector('.status-dot');
   const text = document.getElementById('apiStatusText');
+
+  if (!dot || !text) return;
 
   dot.className = 'status-dot';
 
@@ -181,10 +270,30 @@ function collectEspnTeams(events) {
 
   fallbackTeams.forEach(team => {
     const key = getTeamKey(team);
-    if (!teams.some(existing => getTeamKey(existing) === key)) teams.push(team);
+    if (!teams.some(existing => getTeamKey(existing) === key)) {
+      teams.push(team);
+    }
   });
 
   return teams.slice(0, TOTAL_WORLD_CUP_TEAMS);
+}
+
+function collectStandingsLogos(data) {
+  const groups = getStandingsGroups(data);
+
+  groups.forEach(group => {
+    const entries = getStandingsEntries(group);
+
+    entries.forEach(entry => {
+      const team = getTeamFromStandingEntry(entry);
+      const teamName = normaliseTeamName(team.displayName || team.name || team.shortDisplayName || '');
+      const logo = team.logo || team.logos?.[0]?.href || team.logos?.[0]?.href;
+
+      if (teamName && logo) {
+        espnTeamLogoMap.set(getTeamKey(teamName), logo);
+      }
+    });
+  });
 }
 
 function buildPlayers(allTeams) {
@@ -250,16 +359,33 @@ function getDisplayEvents(events) {
   const today = sorted.filter(event => isSameLocalDay(new Date(event.date), now));
 
   if (today.length > 0) {
-    return { title: "Today's Fixtures", tileTitle: "Today's Matches", subtext: 'fixtures from ESPN', events: today.slice(0, 4), isToday: true };
+    return {
+      title: "Today's Fixtures",
+      tileTitle: "Today's Matches",
+      subtext: 'fixtures from ESPN',
+      events: today.slice(0, 4),
+      isToday: true
+    };
   }
 
   const upcoming = sorted.filter(event => new Date(event.date) >= now).slice(0, 4);
-  return { title: 'Next Fixtures', tileTitle: 'Next Matches', subtext: 'upcoming fixtures from ESPN', events: upcoming, isToday: false };
+
+  return {
+    title: 'Next Fixtures',
+    tileTitle: 'Next Matches',
+    subtext: 'upcoming fixtures from ESPN',
+    events: upcoming,
+    isToday: false
+  };
 }
 
 function getFixtureScoreText(event, away, home) {
   const state = event.status?.type?.state || 'pre';
-  if (state === 'pre') return 'vs';
+
+  if (state === 'pre') {
+    return 'vs';
+  }
+
   return `${away?.score ?? 0} - ${home?.score ?? 0}`;
 }
 
@@ -271,26 +397,35 @@ function renderFixtures(events) {
   const matchesTileTitle = document.getElementById('matchesTileTitle');
   const matchesTileSubtext = document.getElementById('matchesTileSubtext');
 
+  if (!list) return;
+
   const display = getDisplayEvents(events);
-  todayCount.textContent = display.events.length;
-  fixturePanelTitle.textContent = display.title;
-  matchesTileTitle.textContent = display.tileTitle;
-  matchesTileSubtext.textContent = display.subtext;
+
+  if (todayCount) todayCount.textContent = display.events.length;
+  if (fixturePanelTitle) fixturePanelTitle.textContent = display.title;
+  if (matchesTileTitle) matchesTileTitle.textContent = display.tileTitle;
+  if (matchesTileSubtext) matchesTileSubtext.textContent = display.subtext;
 
   if (!display.events.length) {
     list.innerHTML = '<div class="empty-state">No fixtures returned yet. ESPN is connected, but this scoreboard window may not have games.</div>';
-    fixtureDate.textContent = 'No games';
+    if (fixtureDate) fixtureDate.textContent = 'No games';
     return;
   }
 
-  fixtureDate.textContent = formatTime(display.events[0].date).date;
+  if (fixtureDate) fixtureDate.textContent = formatTime(display.events[0].date).date;
 
   list.innerHTML = display.events.map(event => {
     const { home, away, competition } = getCompetitors(event);
+
     const homeTeam = home?.team || { displayName: 'Home', logo: '' };
     const awayTeam = away?.team || { displayName: 'Away', logo: '' };
-    const homeOwner = findOwner(homeTeam.displayName);
-    const awayOwner = findOwner(awayTeam.displayName);
+
+    const homeName = normaliseTeamName(homeTeam.displayName || homeTeam.shortDisplayName || 'Home');
+    const awayName = normaliseTeamName(awayTeam.displayName || awayTeam.shortDisplayName || 'Away');
+
+    const homeOwner = findOwner(homeName);
+    const awayOwner = findOwner(awayName);
+
     const status = event.status?.type?.description || 'Scheduled';
     const score = getFixtureScoreText(event, away, home);
     const time = formatTime(event.date);
@@ -301,9 +436,9 @@ function renderFixtures(events) {
         <div class="time-box">${time.time}<span>${status}</span></div>
 
         <div class="team">
-          <img class="fixture-flag" src="${logoForTeam(awayTeam)}" alt="${awayTeam.displayName} logo" loading="lazy" onerror="this.src='https://flagcdn.com/w80/un.png'" />
+          <img class="fixture-flag" src="${logoForTeam(awayTeam)}" alt="${awayName} logo" loading="lazy" onerror="this.src='https://flagcdn.com/w80/un.png'" />
           <div>
-            <span class="team-name">${awayTeam.displayName}</span>
+            <span class="team-name">${awayName}</span>
             <span class="owner-name" style="color:${awayOwner?.color || '#667085'}">${awayOwner ? awayOwner.name : 'Unassigned'}</span>
           </div>
         </div>
@@ -311,9 +446,9 @@ function renderFixtures(events) {
         <div class="fixture-score">${score}</div>
 
         <div class="team">
-          <img class="fixture-flag" src="${logoForTeam(homeTeam)}" alt="${homeTeam.displayName} logo" loading="lazy" onerror="this.src='https://flagcdn.com/w80/un.png'" />
+          <img class="fixture-flag" src="${logoForTeam(homeTeam)}" alt="${homeName} logo" loading="lazy" onerror="this.src='https://flagcdn.com/w80/un.png'" />
           <div>
-            <span class="team-name">${homeTeam.displayName}</span>
+            <span class="team-name">${homeName}</span>
             <span class="owner-name" style="color:${homeOwner?.color || '#667085'}">${homeOwner ? homeOwner.name : 'Unassigned'}</span>
           </div>
         </div>
@@ -354,6 +489,7 @@ function calculateTeamStats(events) {
 
     const homeKey = getTeamKey(home.team.displayName);
     const awayKey = getTeamKey(away.team.displayName);
+
     const homeStat = teamStats.get(homeKey);
     const awayStat = teamStats.get(awayKey);
 
@@ -388,11 +524,18 @@ function updateOneTeam(stat, goalsFor, goalsAgainst) {
 
 function renderDraw(events) {
   const grid = document.getElementById('playerDraw');
+  if (!grid) return;
+
   const teamStats = calculateTeamStats(events);
   const totalTeams = players.reduce((sum, player) => sum + player.teams.length, 0);
-  const stillIn = players.flatMap(p => p.teams).filter(team => teamStats.get(getTeamKey(team))?.stillIn !== false).length;
+  const stillIn = players
+    .flatMap(player => player.teams)
+    .filter(team => teamStats.get(getTeamKey(team))?.stillIn !== false).length;
 
-  document.getElementById('teamsStillIn').textContent = `${stillIn || totalTeams} / ${TOTAL_WORLD_CUP_TEAMS}`;
+  const teamsStillIn = document.getElementById('teamsStillIn');
+  if (teamsStillIn) {
+    teamsStillIn.textContent = `${stillIn || totalTeams} / ${TOTAL_WORLD_CUP_TEAMS}`;
+  }
 
   grid.innerHTML = players.map(player => {
     const chips = player.teams.map(team => `
@@ -405,7 +548,9 @@ function renderDraw(events) {
     return `
       <div class="draw-card">
         <div class="draw-card-head">
-          <div class="player-name" style="color:${player.color}"><span class="avatar">${player.avatar}</span>${player.name}</div>
+          <div class="player-name" style="color:${player.color}">
+            <span class="avatar">${player.avatar}</span>${player.name}
+          </div>
           <span class="team-count-pill">${player.teams.length} teams</span>
         </div>
         <div class="draw-team-list">${chips}</div>
@@ -418,47 +563,235 @@ function renderDraw(events) {
 
 function renderLeaderboard(teamStats) {
   const list = document.getElementById('leaderboard');
+  if (!list) return;
 
   const rows = players.map(player => {
     const stillIn = player.teams.filter(team => teamStats.get(getTeamKey(team))?.stillIn !== false).length;
-    const points = player.teams.reduce((sum, team) => sum + (teamStats.get(getTeamKey(team))?.points || 0), 0);
-    return { ...player, stillIn, points };
-  }).sort((a, b) => b.stillIn - a.stillIn || b.points - a.points);
+    return { ...player, stillIn };
+  }).sort((a, b) => b.stillIn - a.stillIn);
 
   list.innerHTML = rows.map((player, index) => `
     <div class="leaderboard-row">
       <div class="rank">${index + 1}</div>
-      <div class="player-name" style="color:${player.color}"><span class="avatar">${player.avatar}</span><div>${player.name}<div class="leader-meta">${player.stillIn} / 8 teams still in</div></div></div>
-      <div class="points" style="color:${player.color}">${player.points}</div>
+      <div class="player-name" style="color:${player.color}">
+        <span class="avatar">${player.avatar}</span>
+        <div>
+          ${player.name}
+          <div class="leader-meta">${player.stillIn} / ${player.teams.length} teams still in</div>
+        </div>
+      </div>
     </div>
   `).join('');
 }
 
 async function fetchEspnEvents() {
   const response = await fetch(ESPN_URL, { cache: 'no-store' });
-  if (!response.ok) throw new Error(`ESPN returned ${response.status}`);
+
+  if (!response.ok) {
+    throw new Error(`ESPN returned ${response.status}`);
+  }
+
   const data = await response.json();
   return data.events || [];
+}
+
+async function fetchEspnStandings() {
+  const response = await fetch(ESPN_STANDINGS_URL, { cache: 'no-store' });
+
+  if (!response.ok) {
+    throw new Error(`ESPN standings returned ${response.status}`);
+  }
+
+  return await response.json();
+}
+
+function getStatValue(entry, statNames) {
+  const stats = entry.stats || [];
+
+  for (const statName of statNames) {
+    const stat = stats.find(s =>
+      s.name === statName ||
+      s.abbreviation === statName ||
+      s.displayName === statName
+    );
+
+    if (stat) {
+      return stat.displayValue ?? stat.value ?? 0;
+    }
+  }
+
+  return 0;
+}
+
+function getTeamFromStandingEntry(entry) {
+  return entry.team || entry;
+}
+
+function getStandingsGroups(data) {
+  if (Array.isArray(data.children) && data.children.length) {
+    return data.children;
+  }
+
+  if (Array.isArray(data.standings) && data.standings.length) {
+    return data.standings;
+  }
+
+  if (data.standings?.entries?.length) {
+    return [{
+      name: 'Standings',
+      standings: data.standings
+    }];
+  }
+
+  return [];
+}
+
+function getStandingsEntries(group) {
+  return group.standings?.entries ||
+    group.entries ||
+    group.children?.flatMap(child => child.standings?.entries || child.entries || []) ||
+    [];
+}
+
+function renderStandings(data) {
+  const grid = document.getElementById('standingsGrid');
+  if (!grid) return;
+
+  const groups = getStandingsGroups(data);
+
+  if (!groups.length) {
+    grid.innerHTML = '<div class="empty-state">No standings returned yet.</div>';
+    return;
+  }
+
+  const html = groups.map((group, index) => {
+    const groupName = group.name ||
+      group.displayName ||
+      group.shortName ||
+      `Group ${String.fromCharCode(65 + index)}`;
+
+    const entries = getStandingsEntries(group);
+
+    if (!entries.length) return '';
+
+    const rows = entries.map(entry => {
+      const team = getTeamFromStandingEntry(entry);
+      const teamName = normaliseTeamName(team.displayName || team.name || team.shortDisplayName || 'Team');
+      const owner = findOwner(teamName);
+
+      const played = getStatValue(entry, ['gamesPlayed', 'GP', 'Games Played']);
+      const wins = getStatValue(entry, ['wins', 'W', 'Wins']);
+      const draws = getStatValue(entry, ['ties', 'draws', 'D', 'Draws']);
+      const losses = getStatValue(entry, ['losses', 'L', 'Losses']);
+      const points = getStatValue(entry, ['points', 'PTS', 'Points']);
+      const goalDifference = getStatValue(entry, ['pointDifferential', 'goalDifferential', 'GD', 'Goal Difference']);
+
+      const gdNumber = Number(goalDifference);
+      const gdText = gdNumber > 0 ? `+${gdNumber}` : goalDifference;
+
+      return `
+        <tr>
+          <td>
+            <div class="standing-team">
+              <img src="${logoForName(teamName)}" alt="${teamName} logo" loading="lazy" onerror="this.src='https://flagcdn.com/w80/un.png'" />
+              <span class="standing-team-name">${teamName}</span>
+            </div>
+          </td>
+          <td>
+            <span class="owner-pill" style="color:${owner?.color || '#667085'}">
+              ${owner ? owner.name : 'Unassigned'}
+            </span>
+          </td>
+          <td>${played}</td>
+          <td>${wins}</td>
+          <td>${draws}</td>
+          <td>${losses}</td>
+          <td class="${gdNumber < 0 ? 'negative-gd' : 'positive-gd'}">${gdText}</td>
+          <td><strong>${points}</strong></td>
+        </tr>
+      `;
+    }).join('');
+
+    return `
+      <div class="group-card">
+        <div class="group-title">
+          <span>${groupName}</span>
+          <span>${entries.length} teams</span>
+        </div>
+
+        <table class="group-table">
+          <thead>
+            <tr>
+              <th>Team</th>
+              <th>Owner</th>
+              <th>P</th>
+              <th>W</th>
+              <th>D</th>
+              <th>L</th>
+              <th>GD</th>
+              <th>Pts</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }).join('');
+
+  grid.innerHTML = html || '<div class="empty-state">No standings groups available yet.</div>';
+}
+
+async function loadStandings() {
+  const grid = document.getElementById('standingsGrid');
+
+  try {
+    const standings = await fetchEspnStandings();
+    collectStandingsLogos(standings);
+    renderStandings(standings);
+  } catch (standingsError) {
+    console.warn('ESPN standings failed.', standingsError);
+
+    if (grid) {
+      grid.innerHTML = '<div class="empty-state">Standings unavailable right now. Fixtures are still working.</div>';
+    }
+  }
 }
 
 async function init() {
   try {
     setApiStatus('checking', 'Checking ESPN...');
+
     const events = await fetchEspnEvents();
     const allTeams = collectEspnTeams(events);
+
     buildPlayers(allTeams);
+
     const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     setApiStatus('live', `ESPN live ✓ checked ${now}`);
+
     renderFixtures(events);
     renderDraw(events);
+
+    await loadStandings();
   } catch (error) {
     console.warn('ESPN fetch failed. Using fallback data.', error);
+
     setApiStatus('error', 'ESPN failed ✕ using backup data');
+
     const allTeams = collectEspnTeams(fallbackEvents);
     buildPlayers(allTeams);
+
     renderFixtures(fallbackEvents);
     renderDraw(fallbackEvents);
+
+    const grid = document.getElementById('standingsGrid');
+    if (grid) {
+      grid.innerHTML = '<div class="empty-state">Standings will appear when ESPN returns group table data.</div>';
+    }
   }
 }
 
 init();
+
