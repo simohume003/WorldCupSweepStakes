@@ -7,102 +7,107 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="hero">
-    <div class="topbar">
-      <div class="brand">
-        <div class="brand__icon">🏆</div>
-        <div>
-          <h1>World Cup Sweepstake</h1>
-          <p>Family tracker · last team standing wins</p>
-        </div>
-      </div>
-      <div class="api-pill" id="apiStatus">Loading ESPN data…</div>
-    </div>
+  <div class="api-status" id="apiStatus">
+    <span class="status-dot status-checking"></span>
+    <span id="apiStatusText">Checking ESPN...</span>
+  </div>
 
-    <section class="stat-grid" aria-label="Sweepstake summary">
-      <article class="stat-card">
-        <div class="stat-card__icon green">📅</div>
+  <main class="page-shell">
+    <section class="hero">
+      <div class="hero-ball" aria-hidden="true">⚽</div>
+      <div>
+        <p class="eyebrow">Family game dashboard</p>
+        <h1>World Cup Sweepstake</h1>
+        <p class="hero-subtitle">Track today’s fixtures, live scores, teams still in, and who is closest to the prize.</p>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <article class="summary-card">
+        <div class="summary-icon green">📅</div>
         <div>
-          <p class="eyebrow">Today's matches</p>
-          <strong id="todayMatchesCount">0</strong>
-          <span id="todayMatchesSub">fixtures today</span>
+          <p>Today’s Matches</p>
+          <strong id="todayCount">0</strong>
+          <span>fixtures from ESPN</span>
         </div>
       </article>
 
-      <article class="stat-card stat-card--featured">
-        <div class="stat-card__icon blue">🛡️</div>
+      <article class="summary-card featured">
+        <div class="summary-icon blue">🛡️</div>
         <div>
-          <p class="eyebrow">Teams still in</p>
-          <strong id="teamsStillIn">0 / 0</strong>
+          <p>Teams Still In</p>
+          <strong id="teamsStillIn">0 / 48</strong>
           <span>teams alive in the sweep</span>
         </div>
       </article>
 
-      <article class="stat-card stat-card--prize">
-        <div class="stat-card__icon gold">🏆</div>
+      <article class="summary-card prize-card">
+        <div class="summary-icon gold">🏆</div>
         <div>
-          <p class="eyebrow">Prize rule</p>
+          <p>Prize Rule</p>
           <strong>Last team standing</strong>
           <span>wins the prize</span>
         </div>
       </article>
     </section>
-  </header>
 
-  <main class="dashboard">
-    <section class="panel fixtures-panel">
-      <div class="panel__header">
-        <div>
-          <p class="eyebrow">Live from ESPN</p>
-          <h2>Today's Fixtures</h2>
+    <section class="content-grid">
+      <article class="panel fixtures-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Live from ESPN</p>
+            <h2>Today’s Fixtures</h2>
+          </div>
+          <span class="date-pill" id="fixtureDate">Today</span>
         </div>
-        <span class="date-pill" id="todayLabel">Today</span>
-      </div>
-      <div class="fixture-list" id="fixtureList"></div>
+        <div class="fixtures-list" id="fixturesList"></div>
+      </article>
+
+      <article class="panel rules-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Sweep rules</p>
+            <h2>Family Rules</h2>
+          </div>
+        </div>
+
+        <div class="main-rule">
+          <span>🏆</span>
+          <div>
+            <strong>Last team standing wins</strong>
+            <p>The final person with at least one team still alive takes the prize.</p>
+          </div>
+        </div>
+
+        <ul class="rule-list">
+          <li><strong>Win = 2 pts</strong><span>When your team wins a match.</span></li>
+          <li><strong>Draw = 1 pt</strong><span>Group-stage draws still count.</span></li>
+          <li><strong>Qualify = 3 pts</strong><span>Bonus when a team reaches the next round.</span></li>
+          <li><strong>Knocked out = 0 future pts</strong><span>They stay visible, but stop earning.</span></li>
+        </ul>
+      </article>
     </section>
 
-    <aside class="panel rules-panel">
-      <div class="panel__header">
-        <div>
-          <p class="eyebrow">Sweep rules</p>
-          <h2>Family Rules</h2>
+    <section class="lower-grid">
+      <article class="panel performance-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">How each player’s teams are doing</p>
+            <h2>Teams per Player Performance</h2>
+          </div>
         </div>
-        <span class="shield">🛡️</span>
-      </div>
-      <div class="prize-callout">
-        <span>🏆</span>
-        <div>
-          <h3>Last team standing wins</h3>
-          <p>The final person with at least one team still alive takes the prize.</p>
-        </div>
-      </div>
-      <ul class="rule-list">
-        <li><strong>Win = 2 pts</strong><span>When your team wins a match.</span></li>
-        <li><strong>Draw = 1 pt</strong><span>Group-stage draws still count.</span></li>
-        <li><strong>Qualify = 3 pts</strong><span>Bonus when a team reaches the next round.</span></li>
-        <li><strong>Knocked out = 0 future pts</strong><span>They stay visible, but stop earning.</span></li>
-      </ul>
-    </aside>
+        <div id="playerPerformance" class="performance-table"></div>
+      </article>
 
-    <section class="panel performance-panel">
-      <div class="panel__header">
-        <div>
-          <p class="eyebrow">Main tracker</p>
-          <h2>Teams per Player Performance</h2>
+      <article class="panel leaderboard-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Overall standings</p>
+            <h2>Player Leaderboard</h2>
+          </div>
         </div>
-        <span class="helper-text">Temporary draw data — replace after your real draw</span>
-      </div>
-      <div class="performance-table" id="performanceTable"></div>
-    </section>
-
-    <section class="panel leaderboard-panel">
-      <div class="panel__header">
-        <div>
-          <p class="eyebrow">Standings</p>
-          <h2>Player Leaderboard</h2>
-        </div>
-      </div>
-      <div class="leaderboard" id="leaderboard"></div>
+        <div id="leaderboard" class="leaderboard-list"></div>
+      </article>
     </section>
   </main>
 

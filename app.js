@@ -1,269 +1,327 @@
-// World Cup Sweepstake dashboard
-// ESPN endpoint tested: https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard
-// It is unofficial/undocumented, so this app includes fallback data.
+const ESPN_URL = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
 
-const ESPN_SCOREBOARD_URL = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
-
-const rules = {
-  win: 2,
-  draw: 1,
-  qualify: 3,
-  prize: 'Last team standing wins the prize'
-};
-
-// Placeholder draw data. Replace this after your real family draw.
+// Placeholder draw. After the family draw, replace these teams with the real assignments.
 const players = [
   { name: 'Simon', color: '#0f8a3a', avatar: '🧑🏻', teams: ['Brazil', 'England', 'Japan', 'Morocco', 'Switzerland', 'Croatia', 'Australia', 'Spain'] },
-  { name: 'Dad', color: '#1258d6', avatar: '👨🏻', teams: ['France', 'Germany', 'USA', 'Portugal', 'Netherlands', 'Belgium', 'South Korea', 'Canada'] },
-  { name: 'Mum', color: '#8236d9', avatar: '👩🏻', teams: ['Argentina', 'Denmark', 'Mexico', 'Sweden', 'Norway', 'Ghana', 'Poland', 'Uruguay'] },
-  { name: 'Emma', color: '#e86919', avatar: '👩🏼', teams: ['Italy', 'Serbia', 'Turkey', 'Ecuador', 'Saudi Arabia', 'Chile', 'Wales', 'Scotland'] },
-  { name: 'Jack', color: '#d7263d', avatar: '🧑🏼', teams: ['Senegal', 'Costa Rica', 'Tunisia', 'Cameroon', 'Iran', 'Qatar', 'Peru', 'South Africa'] },
-  { name: 'Uncle John', color: '#087c8d', avatar: '👴🏻', teams: ['Ireland', 'Austria', 'Paraguay', 'Egypt', 'Algeria', 'Jamaica', 'Panama', 'New Zealand'] }
+  { name: 'Dad', color: '#1258d6', avatar: '👨🏻', teams: ['France', 'Germany', 'United States', 'Portugal', 'Netherlands', 'Belgium', 'Korea Republic', 'Canada'] },
+  { name: 'Mum', color: '#7a2fd4', avatar: '👩🏻', teams: ['Mexico', 'Norway', 'Sweden', 'Ghana', 'Denmark', 'Senegal', 'Uruguay', 'Ecuador'] },
+  { name: 'Andy', color: '#e86f00', avatar: '👩🏼', teams: ['Argentina', 'South Africa', 'Serbia', 'Turkey', 'Poland', 'Saudi Arabia', 'Tunisia', 'Iran'] },
+  { name: 'Jay', color: '#d92d20', avatar: '🧑🏼', teams: ['Italy', 'Chile', 'Colombia', 'Paraguay', 'Scotland', 'Wales', 'Costa Rica', 'Panama'] },
+  { name: 'Karl', color: '#008c95', avatar: '👨🏼', teams: ['Cameroon', 'Nigeria', 'Algeria', 'Egypt', 'New Zealand', 'Qatar', 'UAE', 'Iraq'] }
 ];
 
-const manualStatus = {
-  Brazil: 'Still In', England: 'Still In', Japan: 'Still In', Morocco: 'Still In', Switzerland: 'Still In', Croatia: 'Still In', Australia: 'Still In', Spain: 'Knocked Out',
-  France: 'Still In', Germany: 'Still In', USA: 'Still In', Portugal: 'Still In', Netherlands: 'Still In', Belgium: 'Knocked Out', 'South Korea': 'Knocked Out', Canada: 'Knocked Out',
-  Argentina: 'Still In', Denmark: 'Still In', Mexico: 'Still In', Sweden: 'Still In', Norway: 'Knocked Out', Ghana: 'Knocked Out', Poland: 'Knocked Out', Uruguay: 'Knocked Out',
-  Italy: 'Still In', Serbia: 'Still In', Turkey: 'Still In', Ecuador: 'Knocked Out', 'Saudi Arabia': 'Knocked Out', Chile: 'Knocked Out', Wales: 'Knocked Out', Scotland: 'Knocked Out',
-  Senegal: 'Still In', 'Costa Rica': 'Still In', Tunisia: 'Knocked Out', Cameroon: 'Knocked Out', Iran: 'Knocked Out', Qatar: 'Knocked Out', Peru: 'Knocked Out', 'South Africa': 'Knocked Out',
-  Ireland: 'Still In', Austria: 'Knocked Out', Paraguay: 'Knocked Out', Egypt: 'Knocked Out', Algeria: 'Knocked Out', Jamaica: 'Knocked Out', Panama: 'Knocked Out', 'New Zealand': 'Knocked Out'
-};
-
-const flagFallbacks = {
-  Brazil: '🇧🇷', England: '🏴', Japan: '🇯🇵', Morocco: '🇲🇦', Switzerland: '🇨🇭', Croatia: '🇭🇷', Australia: '🇦🇺', Spain: '🇪🇸',
-  France: '🇫🇷', Germany: '🇩🇪', USA: '🇺🇸', Portugal: '🇵🇹', Netherlands: '🇳🇱', Belgium: '🇧🇪', 'South Korea': '🇰🇷', Canada: '🇨🇦',
-  Argentina: '🇦🇷', Denmark: '🇩🇰', Mexico: '🇲🇽', Sweden: '🇸🇪', Norway: '🇳🇴', Ghana: '🇬🇭', Poland: '🇵🇱', Uruguay: '🇺🇾',
-  Italy: '🇮🇹', Serbia: '🇷🇸', Turkey: '🇹🇷', Ecuador: '🇪🇨', 'Saudi Arabia': '🇸🇦', Chile: '🇨🇱', Wales: '🏴', Scotland: '🏴',
-  Senegal: '🇸🇳', 'Costa Rica': '🇨🇷', Tunisia: '🇹🇳', Cameroon: '🇨🇲', Iran: '🇮🇷', Qatar: '🇶🇦', Peru: '🇵🇪', 'South Africa': '🇿🇦',
-  Ireland: '🇮🇪', Austria: '🇦🇹', Paraguay: '🇵🇾', Egypt: '🇪🇬', Algeria: '🇩🇿', Jamaica: '🇯🇲', Panama: '🇵🇦', 'New Zealand': '🇳🇿',
-  Mexico: '🇲🇽', Czechia: '🇨🇿'
-};
-
-const fallbackFixtures = [
-  { id: 'demo-1', date: new Date().toISOString(), time: '11:00 AM', home: 'Brazil', away: 'France', venue: 'Riverpark Stadium', status: 'Scheduled', homeScore: 0, awayScore: 0, completed: false },
-  { id: 'demo-2', date: new Date().toISOString(), time: '2:00 PM', home: 'Argentina', away: 'Portugal', venue: 'Coastal Arena', status: 'Scheduled', homeScore: 0, awayScore: 0, completed: false },
-  { id: 'demo-3', date: new Date().toISOString(), time: '5:00 PM', home: 'Germany', away: 'England', venue: 'Lakeside Stadium', status: 'Scheduled', homeScore: 0, awayScore: 0, completed: false },
-  { id: 'demo-4', date: new Date().toISOString(), time: '8:00 PM', home: 'USA', away: 'Japan', venue: 'Metro Stadium', status: 'Scheduled', homeScore: 0, awayScore: 0, completed: false }
+const fallbackEvents = [
+  {
+    id: 'demo-1',
+    date: new Date().toISOString(),
+    name: 'Brazil vs France',
+    status: { type: { description: 'Scheduled', state: 'pre' } },
+    competitions: [{
+      venue: { fullName: 'Demo Stadium' },
+      competitors: [
+        { homeAway: 'home', score: '0', team: { displayName: 'Brazil', logo: '' } },
+        { homeAway: 'away', score: '0', team: { displayName: 'France', logo: '' } }
+      ]
+    }]
+  },
+  {
+    id: 'demo-2',
+    date: new Date().toISOString(),
+    name: 'Mexico vs South Africa',
+    status: { type: { description: 'Scheduled', state: 'pre' } },
+    competitions: [{
+      venue: { fullName: 'Demo Arena' },
+      competitors: [
+        { homeAway: 'home', score: '0', team: { displayName: 'Mexico', logo: '' } },
+        { homeAway: 'away', score: '0', team: { displayName: 'South Africa', logo: '' } }
+      ]
+    }]
+  }
 ];
 
-let fixtures = fallbackFixtures;
-let teamLogos = {};
-let sourceLabel = 'Demo fallback data';
+const teamAliases = {
+  'USA': 'United States',
+  'USMNT': 'United States',
+  'South Korea': 'Korea Republic',
+  'Korea': 'Korea Republic'
+};
 
-function normaliseTeamName(name) {
-  if (name === 'United States') return 'USA';
-  if (name === 'Korea Republic') return 'South Korea';
-  return name;
+function normaliseTeamName(name = '') {
+  const trimmed = name.trim();
+  return teamAliases[trimmed] || trimmed;
 }
 
-function parseEspnScoreboard(data) {
-  const events = Array.isArray(data?.events) ? data.events : [];
-  const parsed = events.map(event => {
-    const competition = event.competitions?.[0] || {};
-    const competitors = competition.competitors || [];
-    const homeRaw = competitors.find(team => team.homeAway === 'home') || competitors[0];
-    const awayRaw = competitors.find(team => team.homeAway === 'away') || competitors[1];
-    const home = normaliseTeamName(homeRaw?.team?.displayName || homeRaw?.team?.shortDisplayName || 'Home');
-    const away = normaliseTeamName(awayRaw?.team?.displayName || awayRaw?.team?.shortDisplayName || 'Away');
-
-    teamLogos[home] = homeRaw?.team?.logo || teamLogos[home];
-    teamLogos[away] = awayRaw?.team?.logo || teamLogos[away];
-
-    return {
-      id: event.id,
-      date: event.date,
-      time: formatTime(event.date),
-      home,
-      away,
-      venue: competition.venue?.fullName || event.venue?.displayName || 'Venue TBC',
-      status: competition.status?.type?.shortDetail || event.status?.type?.shortDetail || 'Scheduled',
-      completed: Boolean(competition.status?.type?.completed || event.status?.type?.completed),
-      state: competition.status?.type?.state || event.status?.type?.state || 'pre',
-      homeScore: Number(homeRaw?.score || 0),
-      awayScore: Number(awayRaw?.score || 0)
-    };
-  });
-
-  return parsed.length ? parsed : fallbackFixtures;
+function findOwner(teamName) {
+  const normalized = normaliseTeamName(teamName).toLowerCase();
+  return players.find(player =>
+    player.teams.some(team => normaliseTeamName(team).toLowerCase() === normalized)
+  );
 }
 
-async function loadFixtures() {
-  setApiStatus('Loading ESPN data…', 'loading');
+function setApiStatus(mode, message) {
+  const status = document.getElementById('apiStatus');
+  const dot = status.querySelector('.status-dot');
+  const text = document.getElementById('apiStatusText');
 
-  try {
-    const response = await fetch(ESPN_SCOREBOARD_URL, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`ESPN returned ${response.status}`);
-    const data = await response.json();
-    fixtures = parseEspnScoreboard(data);
-    sourceLabel = 'Live ESPN data';
-    setApiStatus('Live ESPN data', 'live');
-  } catch (error) {
-    console.warn('ESPN load failed, using fallback data:', error);
-    fixtures = fallbackFixtures;
-    sourceLabel = 'Demo data — ESPN unavailable';
-    setApiStatus('Demo mode — ESPN blocked/unavailable', 'demo');
+  dot.className = 'status-dot';
+
+  if (mode === 'live') {
+    dot.classList.add('status-live');
+  } else if (mode === 'error') {
+    dot.classList.add('status-error');
+  } else {
+    dot.classList.add('status-checking');
   }
 
-  renderAll();
+  text.textContent = message;
 }
 
-function setApiStatus(text, mode) {
-  const el = document.getElementById('apiStatus');
-  el.textContent = text;
-  el.className = `api-pill api-pill--${mode}`;
-}
-
-function ownerOf(team) {
-  return players.find(player => player.teams.includes(team)) || { name: 'Unclaimed', color: '#6c7484', avatar: '❔', teams: [] };
-}
-
-function getTeamStatus(team) {
-  return manualStatus[team] || 'Still In';
-}
-
-function teamIcon(team) {
-  if (teamLogos[team]) return `<img src="${teamLogos[team]}" alt="${team}" />`;
-  return `<span>${flagFallbacks[team] || '⚽'}</span>`;
-}
-
-function pointsFromFixtures(team) {
-  return fixtures.reduce((total, match) => {
-    if (!match.completed) return total;
-    const isHome = match.home === team;
-    const isAway = match.away === team;
-    if (!isHome && !isAway) return total;
-    const ownScore = isHome ? match.homeScore : match.awayScore;
-    const otherScore = isHome ? match.awayScore : match.homeScore;
-    if (ownScore > otherScore) return total + rules.win;
-    if (ownScore === otherScore) return total + rules.draw;
-    return total;
-  }, 0);
-}
-
-function goalDifferenceFromFixtures(team) {
-  return fixtures.reduce((total, match) => {
-    if (!match.completed) return total;
-    if (match.home === team) return total + match.homeScore - match.awayScore;
-    if (match.away === team) return total + match.awayScore - match.homeScore;
-    return total;
-  }, 0);
-}
-
-function playerSummary(player) {
-  const teams = player.teams.map(team => ({
-    team,
-    status: getTeamStatus(team),
-    points: pointsFromFixtures(team),
-    gd: goalDifferenceFromFixtures(team)
-  }));
-  const stillIn = teams.filter(team => team.status !== 'Knocked Out').length;
-  const points = teams.reduce((sum, team) => sum + team.points, 0);
-  const gd = teams.reduce((sum, team) => sum + team.gd, 0);
-  return { ...player, stillIn, total: teams.length, points, gd, teams };
-}
-
-function statusFor(percent) {
-  if (percent >= 75) return ['Excellent', 'status-good'];
-  if (percent >= 50) return ['Good', 'status-ok'];
-  if (percent >= 30) return ['Fighting On', 'status-warn'];
-  return ['At Risk', 'status-danger'];
+function logoForTeam(team) {
+  if (team.logo) return team.logo;
+  const name = encodeURIComponent(team.displayName || team.shortDisplayName || 'Team');
+  return `https://placehold.co/80x80/eef2f6/172033?text=${name.charAt(0).toUpperCase()}`;
 }
 
 function formatTime(dateString) {
-  return new Intl.DateTimeFormat('en-IE', {
-    hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Europe/Dublin'
-  }).format(new Date(dateString));
+  const date = new Date(dateString);
+  return {
+    time: date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+    date: date.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'short' })
+  };
 }
 
-function formatDate(dateString = new Date()) {
-  return new Intl.DateTimeFormat('en-IE', {
-    weekday: 'long', day: 'numeric', month: 'short', timeZone: 'Europe/Dublin'
-  }).format(new Date(dateString));
+function getCompetitors(event) {
+  const competition = event.competitions?.[0] || {};
+  const competitors = competition.competitors || [];
+  const home = competitors.find(c => c.homeAway === 'home') || competitors[0];
+  const away = competitors.find(c => c.homeAway === 'away') || competitors[1];
+  return { home, away, competition };
 }
 
-function renderStats() {
-  const totalTeams = players.reduce((sum, player) => sum + player.teams.length, 0);
-  const allDrawTeams = players.flatMap(player => player.teams);
-  const stillIn = allDrawTeams.filter(team => getTeamStatus(team) !== 'Knocked Out').length;
-  document.getElementById('todayMatchesCount').textContent = fixtures.length;
-  document.getElementById('todayMatchesSub').textContent = sourceLabel.includes('Live') ? 'fixtures from ESPN' : 'demo fixtures shown';
-  document.getElementById('teamsStillIn').textContent = `${stillIn} / ${totalTeams}`;
-  document.getElementById('todayLabel').textContent = fixtures[0]?.date ? formatDate(fixtures[0].date) : formatDate();
-}
+function renderFixtures(events) {
+  const list = document.getElementById('fixturesList');
+  const todayCount = document.getElementById('todayCount');
+  const fixtureDate = document.getElementById('fixtureDate');
 
-function renderFixtures() {
-  const container = document.getElementById('fixtureList');
+  todayCount.textContent = events.length;
 
-  if (!fixtures.length) {
-    container.innerHTML = `<div class="empty-state">No fixtures found for today.</div>`;
+  if (!events.length) {
+    list.innerHTML = '<div class="empty-state">No fixtures returned for this feed yet. ESPN is connected, but there may not be a match in this scoreboard window.</div>';
+    fixtureDate.textContent = 'No games';
     return;
   }
 
-  container.innerHTML = fixtures.slice(0, 6).map(match => {
-    const homeOwner = ownerOf(match.home);
-    const awayOwner = ownerOf(match.away);
-    const familyMatch = `${homeOwner.name} vs ${awayOwner.name}`;
-    const scoreText = match.completed || match.state === 'in' ? `${match.homeScore} - ${match.awayScore}` : 'VS';
+  fixtureDate.textContent = formatTime(events[0].date).date;
+
+  list.innerHTML = events.map(event => {
+    const { home, away, competition } = getCompetitors(event);
+    const homeTeam = home?.team || { displayName: 'Home', logo: '' };
+    const awayTeam = away?.team || { displayName: 'Away', logo: '' };
+    const homeOwner = findOwner(homeTeam.displayName);
+    const awayOwner = findOwner(awayTeam.displayName);
+    const status = event.status?.type?.description || 'Scheduled';
+    const state = event.status?.type?.state || 'pre';
+    const score = state === 'pre' ? 'vs' : `${away?.score ?? 0} - ${home?.score ?? 0}`;
+    const time = formatTime(event.date);
+    const venue = competition.venue?.fullName || 'Venue TBC';
 
     return `
-      <article class="fixture">
-        <div class="timebox">${match.time.replace(' ', '<span>')} ${match.time.includes(' ') ? '</span>' : ''}</div>
+      <div class="fixture-row">
+        <div class="time-box">${time.time}<span>${status}</span></div>
+
         <div class="team">
-          <span class="flag">${teamIcon(match.home)}</span>
-          <div><strong>${match.home}</strong><span class="owner" style="color:${homeOwner.color}">${homeOwner.name}</span></div>
+          <img class="fixture-flag" src="${logoForTeam(awayTeam)}" alt="${awayTeam.displayName} logo" loading="lazy" />
+          <div>
+            <span class="team-name">${awayTeam.displayName}</span>
+            <span class="owner-name" style="color:${awayOwner?.color || '#667085'}">${awayOwner ? awayOwner.name : 'Unassigned'}</span>
+          </div>
         </div>
-        <span class="vs">${scoreText}</span>
+
+        <div class="fixture-score">${score}</div>
+
         <div class="team">
-          <span class="flag">${teamIcon(match.away)}</span>
-          <div><strong>${match.away}</strong><span class="owner" style="color:${awayOwner.color}">${awayOwner.name}</span></div>
+          <img class="fixture-flag" src="${logoForTeam(homeTeam)}" alt="${homeTeam.displayName} logo" loading="lazy" />
+          <div>
+            <span class="team-name">${homeTeam.displayName}</span>
+            <span class="owner-name" style="color:${homeOwner?.color || '#667085'}">${homeOwner ? homeOwner.name : 'Unassigned'}</span>
+          </div>
         </div>
-        <div class="venue">📍 ${match.venue}<br><strong>${familyMatch}</strong><small>${match.status}</small></div>
-      </article>
+
+        <div class="venue">
+          <span>📍 ${venue}</span>
+          <span class="status-text">${awayOwner?.name || 'Unassigned'} vs ${homeOwner?.name || 'Unassigned'}</span>
+        </div>
+      </div>
     `;
   }).join('');
 }
 
-function renderPerformance() {
-  const container = document.getElementById('performanceTable');
-  container.innerHTML = players.map(playerSummary).map(summary => {
-    const percent = Math.round((summary.stillIn / summary.total) * 100);
-    const [label, className] = statusFor(percent);
-    const liveCopy = `${summary.stillIn} of ${summary.total} teams still in`;
+function calculateTeamStats(events) {
+  const teamStats = new Map();
 
-    return `
-      <article class="player-row">
-        <div class="player" style="color:${summary.color}"><span class="avatar">${summary.avatar}</span>${summary.name}</div>
-        <div class="live-count" style="color:${summary.color}">${summary.stillIn} of ${summary.total}</div>
-        <div class="progress"><span style="width:${percent}%; background:${summary.color}"></span></div>
-        <div class="metric">${percent}%</div>
-        <div class="status-pill ${className}">${label}</div>
-        <div class="team-flags" aria-label="${liveCopy}">${summary.teams.map(team => `<span class="team-dot ${team.status === 'Knocked Out' ? 'is-out' : ''}" title="${team.team} - ${team.status}">${teamIcon(team.team)}</span>`).join('')}</div>
-      </article>
-    `;
-  }).join('');
+  players.flatMap(p => p.teams).forEach(team => {
+    teamStats.set(normaliseTeamName(team), {
+      played: 0,
+      wins: 0,
+      draws: 0,
+      losses: 0,
+      points: 0,
+      stillIn: true,
+      logo: ''
+    });
+  });
+
+  events.forEach(event => {
+    const { home, away } = getCompetitors(event);
+    if (!home || !away) return;
+
+    const state = event.status?.type?.state;
+    const completed = state === 'post';
+    const homeName = normaliseTeamName(home.team.displayName);
+    const awayName = normaliseTeamName(away.team.displayName);
+
+    [home, away].forEach(c => {
+      const name = normaliseTeamName(c.team.displayName);
+      if (teamStats.has(name)) teamStats.get(name).logo = c.team.logo || '';
+    });
+
+    if (!completed) return;
+
+    const homeScore = Number(home.score || 0);
+    const awayScore = Number(away.score || 0);
+
+    const homeStat = teamStats.get(homeName);
+    const awayStat = teamStats.get(awayName);
+
+    if (homeStat) homeStat.played += 1;
+    if (awayStat) awayStat.played += 1;
+
+    if (homeScore > awayScore) {
+      if (homeStat) { homeStat.wins += 1; homeStat.points += 2; }
+      if (awayStat) awayStat.losses += 1;
+    } else if (awayScore > homeScore) {
+      if (awayStat) { awayStat.wins += 1; awayStat.points += 2; }
+      if (homeStat) homeStat.losses += 1;
+    } else {
+      if (homeStat) { homeStat.draws += 1; homeStat.points += 1; }
+      if (awayStat) { awayStat.draws += 1; awayStat.points += 1; }
+    }
+  });
+
+  return teamStats;
 }
 
-function renderLeaderboard() {
-  const container = document.getElementById('leaderboard');
-  const summaries = players.map(playerSummary).sort((a, b) => b.stillIn - a.stillIn || b.points - a.points || b.gd - a.gd);
+function getPerformanceLabel(percent) {
+  if (percent >= 80) return ['Excellent', '#e6f7ec', '#0f8a3a'];
+  if (percent >= 60) return ['Good', '#eaf1ff', '#1258d6'];
+  if (percent >= 40) return ['On Track', '#f4ecff', '#7a2fd4'];
+  if (percent >= 25) return ['Fighting On', '#fff3e8', '#e86f00'];
+  return ['At Risk', '#fff0f0', '#d92d20'];
+}
 
-  container.innerHTML = summaries.map((summary, index) => `
-    <article class="leaderboard-row">
-      <span class="rank">${index + 1}</span>
-      <div class="player" style="color:${summary.color}"><span class="avatar">${summary.avatar}</span>${summary.name}</div>
-      <div><span class="metric">${summary.stillIn}</span> <span class="muted">teams in</span></div>
-      <div><span class="metric">${summary.points}</span> <span class="muted">pts</span></div>
-      <div><span class="metric">${summary.gd > 0 ? '+' : ''}${summary.gd}</span> <span class="muted">GD</span></div>
-    </article>
+function renderPerformance(events) {
+  const table = document.getElementById('playerPerformance');
+  const teamStats = calculateTeamStats(events);
+  let totalStillIn = 0;
+  const totalTeams = players.reduce((sum, p) => sum + p.teams.length, 0);
+
+  table.innerHTML = players.map(player => {
+    const stillIn = player.teams.filter(team => teamStats.get(normaliseTeamName(team))?.stillIn !== false).length;
+    totalStillIn += stillIn;
+    const percent = Math.round((stillIn / player.teams.length) * 100);
+    const [label, bg, fg] = getPerformanceLabel(percent);
+
+    const chips = player.teams.map(team => {
+      const stat = teamStats.get(normaliseTeamName(team));
+      const src = stat?.logo || `https://placehold.co/80x80/eef2f6/172033?text=${encodeURIComponent(team[0])}`;
+      return `<span class="team-chip" title="${team}: ${stat?.points || 0} pts"><img src="${src}" alt="${team}" loading="lazy"></span>`;
+    }).join('');
+
+    return `
+      <div class="player-row">
+        <div class="player-name" style="color:${player.color}"><span class="avatar">${player.avatar}</span>${player.name}</div>
+        <div class="count" style="color:${player.color}">${stillIn} of ${player.teams.length}</div>
+        <div class="progress-track"><div class="progress-fill" style="width:${percent}%; background:${player.color}"></div></div>
+        <div class="status-pill" style="background:${bg}; color:${fg}">${label}</div>
+        <div class="team-chip-list">${chips}</div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('teamsStillIn').textContent = `${totalStillIn} / ${totalTeams}`;
+  renderLeaderboard(events, teamStats);
+}
+
+function renderLeaderboard(events, teamStats) {
+  const list = document.getElementById('leaderboard');
+
+  const rows = players.map(player => {
+    const stillIn = player.teams.filter(team => teamStats.get(normaliseTeamName(team))?.stillIn !== false).length;
+    const points = player.teams.reduce((sum, team) => sum + (teamStats.get(normaliseTeamName(team))?.points || 0), 0);
+    return { ...player, stillIn, points };
+  }).sort((a, b) => b.points - a.points || b.stillIn - a.stillIn);
+
+  list.innerHTML = rows.map((player, index) => `
+    <div class="leaderboard-row">
+      <div class="rank">${index + 1}</div>
+      <div class="player-name" style="color:${player.color}"><span class="avatar">${player.avatar}</span><div>${player.name}<div class="leader-meta">${player.stillIn} teams still in</div></div></div>
+      <div class="points" style="color:${player.color}">${player.points}</div>
+    </div>
   `).join('');
 }
 
-function renderAll() {
-  renderStats();
-  renderFixtures();
-  renderPerformance();
-  renderLeaderboard();
+async function fetchEspnEvents() {
+  const response = await fetch(ESPN_URL, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`ESPN returned ${response.status}`);
+  const data = await response.json();
+  return data.events || [];
 }
 
-loadFixtures();
+async function init() {
+  try {
+    setApiStatus('checking', 'Checking ESPN...');
+    const events = await fetchEspnEvents();
+    const now = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    setApiStatus('live', `ESPN live ✓ checked ${now}`);
+    renderFixtures(events);
+    renderPerformance(events);
+  } catch (error) {
+    console.warn('ESPN fetch failed. Using fallback data.', error);
+    setApiStatus('error', 'ESPN failed ✕ using backup data');
+    renderFixtures(fallbackEvents);
+    renderPerformance(fallbackEvents);
+  }
+}
+
+init();
+function isSameLocalDay(dateA, dateB) {
+  return dateA.getFullYear() === dateB.getFullYear() &&
+    dateA.getMonth() === dateB.getMonth() &&
+    dateA.getDate() === dateB.getDate();
+}
+
+function getTodayEvents(events) {
+  const today = new Date();
+
+  return events.filter(event => {
+    const eventDate = new Date(event.date);
+    return isSameLocalDay(eventDate, today);
+  });
+}
+
+function getNextUpcomingEvents(events) {
+  const now = new Date();
+
+  return events
+    .filter(event => new Date(event.date) >= now)
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+const todayEvents = getTodayEvents(events);
+
+let displayedEvents = todayEvents;
+let fixtureTitle = "Today's Fixtures";
+
+if (todayEvents.length === 0) {
+  displayedEvents = getNextUpcomingEvents(events).slice(0, 4);
+  fixtureTitle = "Next Fixtures";
+}
