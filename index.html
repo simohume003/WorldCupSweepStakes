@@ -7,101 +7,107 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="apiStatus" class="api-status api-status--checking">Checking ESPN...</div>
+  <div class="api-status" id="apiStatus">
+    <span class="status-dot status-checking"></span>
+    <span id="apiStatusText">Checking ESPN...</span>
+  </div>
 
   <main class="page-shell">
-    <section class="hero-card">
+    <section class="hero">
+      <div class="hero-ball" aria-hidden="true">⚽</div>
       <div>
-        <p class="eyebrow">Family sweepstake dashboard</p>
+        <p class="eyebrow">Family game dashboard</p>
         <h1>World Cup Sweepstake</h1>
-        <p class="hero-text">Fixtures, scores and prize tracking powered by ESPN data, with a backup if the feed fails.</p>
+        <p class="hero-subtitle">Live fixtures from ESPN, family matchups, prize rules, and a clean placeholder draw until the real teams are picked.</p>
       </div>
-      <div class="hero-ball">⚽</div>
     </section>
 
     <section class="summary-grid">
       <article class="summary-card">
-        <div class="summary-icon">📅</div>
-        <p id="matchesTileTitle">NEXT MATCHES</p>
-        <h2 id="matchesTileNumber">0</h2>
-        <span id="matchesTileSubtext">upcoming fixtures</span>
+        <div class="summary-icon green">📅</div>
+        <div>
+          <p id="matchesTileTitle">Next Matches</p>
+          <strong id="todayCount">0</strong>
+          <span id="matchesTileSubtext">upcoming fixtures from ESPN</span>
+        </div>
       </article>
 
-      <article class="summary-card summary-card--blue">
-        <div class="summary-icon">🛡️</div>
-        <p>TEAMS STILL IN</p>
-        <h2 id="teamsStillInNumber">32 / 32</h2>
-        <span>teams alive in the sweep</span>
+      <article class="summary-card featured">
+        <div class="summary-icon blue">🛡️</div>
+        <div>
+          <p>Teams Still In</p>
+          <strong id="teamsStillIn">48 / 48</strong>
+          <span>teams alive in the sweep</span>
+        </div>
       </article>
 
-      <article class="summary-card summary-card--gold">
-        <div class="summary-icon">🏆</div>
-        <p>PRIZE RULES</p>
-        <h2>€90</h2>
-        <span>winner, runner-up, third & worst team</span>
+      <article class="summary-card prize-card">
+        <div class="summary-icon gold">🏆</div>
+        <div>
+          <p>Prize Rule</p>
+          <strong>Winner gets €40</strong>
+          <span>plus runner-up, third & worst team prizes</span>
+        </div>
       </article>
     </section>
 
-    <section class="dashboard-grid">
+    <section class="content-grid">
       <article class="panel fixtures-panel">
-        <div class="panel-header">
+        <div class="panel-heading">
           <div>
-            <p class="eyebrow">Fixtures</p>
+            <p class="eyebrow">Live from ESPN</p>
             <h2 id="fixturePanelTitle">Next Fixtures</h2>
           </div>
-          <span id="fixturePanelDate" class="panel-pill">ESPN feed</span>
+          <span class="date-pill" id="fixtureDate">Checking</span>
         </div>
-        <div id="fixturesList" class="fixtures-list"></div>
+        <div class="fixtures-list" id="fixturesList"></div>
       </article>
 
       <article class="panel rules-panel">
-        <div class="panel-header">
+        <div class="panel-heading">
           <div>
-            <p class="eyebrow">Rules</p>
-            <h2>Prize Rules</h2>
+            <p class="eyebrow">Sweep rules</p>
+            <h2>Family Rules</h2>
           </div>
-          <span class="panel-pill panel-pill--gold">€90 pot</span>
         </div>
 
-        <div class="prize-rule-main">
+        <div class="main-rule">
           <span>🏆</span>
           <div>
-            <h3>World Cup winner gets €40</h3>
-            <p>The person who owns the team that wins the final gets the main prize.</p>
+            <strong>World Cup winner: €40</strong>
+            <p>The person who owns the team that wins the final wins the main prize.</p>
           </div>
         </div>
 
-        <ul class="rules-list">
-          <li><strong>🥈 Runner-up:</strong> losing finalist wins €20.</li>
-          <li><strong>🥉 Third place:</strong> third-place team wins €15.</li>
-          <li><strong>🪦 Worst team:</strong> worst team wins €15.</li>
-          <li><strong>Worst team tiebreak:</strong> lowest points, then worst goal difference.</li>
+        <ul class="rule-list">
+          <li><strong>Runner-up: €20</strong><span>The person who owns the team that loses the final.</span></li>
+          <li><strong>Third place: €15</strong><span>The person who owns the team that finishes third.</span></li>
+          <li><strong>Worst team: €15</strong><span>Lowest group points, then worst goal difference if tied.</span></li>
+          <li><strong>48 teams total</strong><span>Each player gets 8 teams once the draw is done.</span></li>
         </ul>
       </article>
     </section>
 
-    <section class="dashboard-grid dashboard-grid--bottom">
-      <article class="panel leaderboard-panel">
-        <div class="panel-header">
+    <section class="lower-grid">
+      <article class="panel draw-panel">
+        <div class="panel-heading">
           <div>
-            <p class="eyebrow">Family</p>
-            <h2>Player Table</h2>
+            <p class="eyebrow">Placeholder until the draw</p>
+            <h2>Players & Teams</h2>
           </div>
-          <span class="panel-pill">placeholder draw</span>
+          <span class="date-pill">8 teams each</span>
         </div>
-        <div id="playerTable" class="player-table"></div>
+        <div id="playerDraw" class="draw-grid"></div>
       </article>
 
-      <article class="panel tracker-panel">
-        <div class="panel-header">
+      <article class="panel leaderboard-panel">
+        <div class="panel-heading">
           <div>
-            <p class="eyebrow">Prize tracker</p>
-            <h2>Current Prize Race</h2>
+            <p class="eyebrow">Quick view</p>
+            <h2>Player Summary</h2>
           </div>
-          <span class="panel-pill">auto-calculated later</span>
         </div>
-
-        <div id="prizeTracker" class="prize-tracker"></div>
+        <div id="leaderboard" class="leaderboard-list"></div>
       </article>
     </section>
   </main>
