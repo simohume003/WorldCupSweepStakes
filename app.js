@@ -79,7 +79,7 @@ const playerShells = [
   { name: 'Dad', color: '#1258d6', avatar: '👨🏻' },
   { name: 'Mum', color: '#7a2fd4', avatar: '👩' },
   { name: 'Andy', color: '#e86f00', avatar: '👨🏼' },
-  { name: 'Jay', color: '#d92d20', avatar: '🧑🏼' },
+  { name: 'Jamie', color: '#d92d20', avatar: '🧑🏼' },
   { name: 'Karl', color: '#008c95', avatar: '👨🏻' }
 ];
 
@@ -128,7 +128,7 @@ const manualDraw = {
     'Panama'
   ],
 
-  Jay: [
+  Jamie: [
     'Brazil',
     'Netherlands',
     'Norway',
