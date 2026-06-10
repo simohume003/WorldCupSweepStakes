@@ -8,7 +8,6 @@
 </head>
 <body>
   <header class="hero">
-    <div class="hero__overlay"></div>
     <div class="topbar">
       <div class="brand">
         <div class="brand__icon">🏆</div>
@@ -17,7 +16,7 @@
           <p>Family tracker · last team standing wins</p>
         </div>
       </div>
-      <div class="topbar__badge">⚽ Live dashboard</div>
+      <div class="api-pill" id="apiStatus">Loading ESPN data…</div>
     </div>
 
     <section class="stat-grid" aria-label="Sweepstake summary">
@@ -26,7 +25,7 @@
         <div>
           <p class="eyebrow">Today's matches</p>
           <strong id="todayMatchesCount">0</strong>
-          <span>fixtures today</span>
+          <span id="todayMatchesSub">fixtures today</span>
         </div>
       </article>
 
@@ -54,7 +53,7 @@
     <section class="panel fixtures-panel">
       <div class="panel__header">
         <div>
-          <p class="eyebrow">Fixtures</p>
+          <p class="eyebrow">Live from ESPN</p>
           <h2>Today's Fixtures</h2>
         </div>
         <span class="date-pill" id="todayLabel">Today</span>
@@ -91,7 +90,7 @@
           <p class="eyebrow">Main tracker</p>
           <h2>Teams per Player Performance</h2>
         </div>
-        <span class="helper-text">Who has the strongest set of teams?</span>
+        <span class="helper-text">Temporary draw data — replace after your real draw</span>
       </div>
       <div class="performance-table" id="performanceTable"></div>
     </section>
