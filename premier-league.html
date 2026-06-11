@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Premier League Watch | Hume World Cup 2026</title>
+
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="api-status status-card">
+    <span class="status-dot status-live"></span>
+    <span>Premier League Watch</span>
+  </div>
+
+  <main class="app-shell">
+    <header class="hero compact-hero">
+      <div>
+        <p class="eyebrow">Familiar Faces</p>
+        <h1>Premier League Watch</h1>
+        <p class="hero-subtitle">
+          See which Premier League players are at the World Cup, who they play for, and who owns their country in the family sweep.
+        </p>
+      </div>
+
+      <a class="quick-link" href="index.html">Back to dashboard</a>
+    </header>
+
+    <section class="summary-grid pl-summary">
+      <article class="summary-card">
+        <div class="summary-icon green">⚽</div>
+        <div>
+          <p>Players listed</p>
+          <h2 id="plPlayerCount">0</h2>
+          <span>Premier League familiar faces</span>
+        </div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon blue">🏟️</div>
+        <div>
+          <p>Clubs</p>
+          <h2 id="plClubCount">0</h2>
+          <span>represented in this page</span>
+        </div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon gold">👑</div>
+        <div>
+          <p>Top owner</p>
+          <h2 id="plTopOwner">-</h2>
+          <span>most PL players owned</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel full-width">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Filter</p>
+          <h2>Find familiar players</h2>
+        </div>
+      </div>
+
+      <div class="pl-filters">
+        <input id="playerSearch" class="pl-search" type="search" placeholder="Search player, club, country or owner..." />
+
+        <select id="ownerFilter" class="pl-select">
+          <option value="all">All owners</option>
+        </select>
+
+        <select id="clubFilter" class="pl-select">
+          <option value="all">All clubs</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="panel full-width">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">World Cup links</p>
+          <h2>Premier League players by country</h2>
+        </div>
+        <span class="date-pill">Fun guide</span>
+      </div>
+
+      <div id="plPlayersGrid" class="pl-player-grid"></div>
+    </section>
+  </main>
+
+  <script src="pl-watch.js"></script>
+</body>
+</html>
