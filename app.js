@@ -159,6 +159,89 @@ const prizeRules = {
   worstTeamTieBreakers: ['lowest points', 'worst goal difference']
 };
 
+const predictionData = [
+  {
+    team: 'Brazil',
+    owner: 'Jay',
+    titles: 5,
+    predictionPercent: 21,
+    label: 'Historic favourite',
+    fact: 'Brazil have won the World Cup more than anyone else.'
+  },
+  {
+    team: 'Germany',
+    owner: 'Dad',
+    titles: 4,
+    predictionPercent: 17,
+    label: 'Tournament machine',
+    fact: 'Germany have four World Cup titles and are usually dangerous.'
+  },
+  {
+    team: 'Argentina',
+    owner: 'Simon',
+    titles: 3,
+    predictionPercent: 14,
+    label: 'Defending champions',
+    fact: 'Argentina won the last World Cup in 2022.'
+  },
+  {
+    team: 'France',
+    owner: 'Dad',
+    titles: 2,
+    predictionPercent: 13,
+    label: 'Recent powerhouse',
+    fact: 'France won in 1998 and 2018, and reached the 2022 final.'
+  },
+  {
+    team: 'Uruguay',
+    owner: 'Simon',
+    titles: 2,
+    predictionPercent: 8,
+    label: 'Old-school giants',
+    fact: 'Uruguay won the first World Cup in 1930 and again in 1950.'
+  },
+  {
+    team: 'Spain',
+    owner: 'Mum',
+    titles: 1,
+    predictionPercent: 7,
+    label: 'Technical threat',
+    fact: 'Spain won their first World Cup in 2010.'
+  },
+  {
+    team: 'England',
+    owner: 'Andy',
+    titles: 1,
+    predictionPercent: 7,
+    label: 'Big contender',
+    fact: 'England won the World Cup in 1966.'
+  },
+  {
+    team: 'Netherlands',
+    owner: 'Jay',
+    titles: 0,
+    predictionPercent: 5,
+    label: 'Nearly men',
+    fact: 'The Netherlands have reached multiple finals but never won it.'
+  },
+  {
+    team: 'Portugal',
+    owner: 'Karl',
+    titles: 0,
+    predictionPercent: 4,
+    label: 'Dangerous outsider',
+    fact: 'Portugal have never won the World Cup, but are always a threat.'
+  },
+  {
+    team: 'Belgium',
+    owner: 'Simon',
+    titles: 0,
+    predictionPercent: 4,
+    label: 'Outside chance',
+    fact: 'Belgium’s best finish was third place in 2018.'
+  }
+];
+
 const fallbackTeams = [
   'Brazil', 'England', 'France', 'Germany', 'Argentina', 'Spain', 'Portugal', 'Netherlands',
   'Mexico', 'United States', 'Canada', 'Japan', 'Korea Republic', 'Australia', 'Morocco', 'Croatia',
@@ -560,6 +643,41 @@ function renderDraw(events) {
 
   renderLeaderboard(teamStats);
 }
+function renderPredictionCorner() {
+  const container = document.getElementById('predictionCorner');
+  if (!container) return;
+
+  const sorted = [...predictionData].sort((a, b) => b.predictionPercent - a.predictionPercent);
+  const top = sorted[0];
+
+  container.innerHTML = `
+    <div class="prediction-winner-card">
+      <p class="eyebrow" style="color: rgba(255,255,255,0.75);">Predicted winner</p>
+
+      <div class="big-team">
+        <img src="${logoForName(top.team)}" alt="${top.team} flag" onerror="this.src='https://flagcdn.com/w80/un.png'" />
+        <span>${top.team}</span>
+      </div>
+
+      <div class="prediction-percent">${top.predictionPercent}%</div>
+      <p>${top.label} • Owned by <strong>${top.owner}</strong></p>
+      <p>${top.fact}</p>
+    </div>
+
+    <div class="prediction-list">
+      ${sorted.slice(1, 8).map(item => `
+        <div class="prediction-row">
+          <img src="${logoForName(item.team)}" alt="${item.team} flag" onerror="this.src='https://flagcdn.com/w80/un.png'" />
+          <div>
+            <div class="prediction-team">${item.team} — ${item.owner}</div>
+            <div class="prediction-meta">${item.titles} World Cup title${item.titles === 1 ? '' : 's'} • ${item.fact}</div>
+          </div>
+          <div class="prediction-score">${item.predictionPercent}%</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
 
 function renderLeaderboard(teamStats) {
   const list = document.getElementById('leaderboard');
@@ -773,6 +891,7 @@ async function init() {
 
     renderFixtures(events);
     renderDraw(events);
+    renderPredictionCorner();
 
     await loadStandings();
   } catch (error) {
@@ -785,6 +904,7 @@ async function init() {
 
     renderFixtures(fallbackEvents);
     renderDraw(fallbackEvents);
+    renderPredictionCorner();
 
     const grid = document.getElementById('standingsGrid');
     if (grid) {

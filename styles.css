@@ -562,3 +562,87 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+.prediction-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.4fr;
+  gap: 18px;
+}
+
+.prediction-winner-card {
+  border-radius: 22px;
+  padding: 22px;
+  color: white;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.22), transparent 28%),
+    linear-gradient(135deg, #0b7a3a, #15a05d);
+  box-shadow: 0 18px 35px rgba(15, 122, 58, 0.22);
+}
+
+.prediction-winner-card .big-team {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 14px 0 8px;
+}
+
+.prediction-winner-card img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: white;
+}
+
+.prediction-percent {
+  font-size: 3rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.prediction-list {
+  display: grid;
+  gap: 10px;
+}
+
+.prediction-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border: 1px solid #e7edf3;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.prediction-row img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.prediction-team {
+  font-weight: 850;
+  color: #172033;
+}
+
+.prediction-meta {
+  color: #667085;
+  font-size: 0.82rem;
+  margin-top: 2px;
+}
+
+.prediction-score {
+  font-weight: 950;
+  color: #0f8a3a;
+}
+
+@media (max-width: 850px) {
+  .prediction-grid {
+    grid-template-columns: 1fr;
+  }
+}
