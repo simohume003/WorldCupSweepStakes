@@ -723,14 +723,20 @@ async function fetchEspnStandings() {
   return await response.json();
 }
 
+function safeArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
 function getStatValue(entry, statNames) {
-  const stats = entry.stats || [];
+  const stats = safeArray(entry.stats);
 
   for (const statName of statNames) {
     const stat = stats.find(s =>
       s.name === statName ||
       s.abbreviation === statName ||
-      s.displayName === statName
+      s.displayName === statName ||
+      s.shortDisplayName === statName ||
+      s.type === statName
     );
 
     if (stat) {
@@ -740,6 +746,7 @@ function getStatValue(entry, statNames) {
 
   return 0;
 }
+
 function statNumber(value) {
   if (value === undefined || value === null || value === '') return 0;
 
@@ -753,35 +760,41 @@ function statNumber(value) {
 }
 
 function getStandingStats(entry) {
-  const played = statNumber(getStatValue(entry, ['gamesPlayed', 'GP', 'Games Played']));
-  const wins = statNumber(getStatValue(entry, ['wins', 'W', 'Wins']));
-  const draws = statNumber(getStatValue(entry, ['ties', 'draws', 'D', 'Draws']));
-  const losses = statNumber(getStatValue(entry, ['losses', 'L', 'Losses']));
-  const points = statNumber(getStatValue(entry, ['points', 'PTS', 'Points']));
-  const goalDifference = statNumber(getStatValue(entry, ['pointDifferential', 'goalDifferential', 'GD', 'Goal Difference']));
-  const goalsFor = statNumber(getStatValue(entry, ['pointsFor', 'goalsFor', 'GF', 'Goals For']));
-
   return {
-    played,
-    wins,
-    draws,
-    losses,
-    points,
-    goalDifference,
-    goalsFor
+    played: statNumber(getStatValue(entry, ['gamesPlayed', 'GP', 'Games Played', 'gamesplayed'])),
+    wins: statNumber(getStatValue(entry, ['wins', 'W', 'Wins', 'wins'])),
+    draws: statNumber(getStatValue(entry, ['ties', 'draws', 'D', 'Draws', 'ties'])),
+    losses: statNumber(getStatValue(entry, ['losses', 'L', 'Losses', 'losses'])),
+    points: statNumber(getStatValue(entry, ['points', 'PTS', 'Points', 'points'])),
+    goalDifference: statNumber(getStatValue(entry, ['pointDifferential', 'goalDifferential', 'GD', 'Goal Difference', 'differential'])),
+    goalsFor: statNumber(getStatValue(entry, ['pointsFor', 'goalsFor', 'GF', 'Goals For', 'for']))
   };
 }
 
+function getTeamFromStandingEntry(entry) {
+  return entry.team || {};
+}
+
+function getTeamNameFromStandingEntry(entry) {
+  const team = getTeamFromStandingEntry(entry);
+
+  return normaliseTeamName(
+    team.displayName ||
+    team.name ||
+    team.shortDisplayName ||
+    entry.displayName ||
+    entry.name ||
+    'Team'
+  );
+}
+
 function sortStandingsEntries(entries) {
-  return [...entries].sort((a, b) => {
+  return safeArray(entries).sort((a, b) => {
     const aStats = getStandingStats(a);
     const bStats = getStandingStats(b);
 
-    const aTeam = getTeamFromStandingEntry(a);
-    const bTeam = getTeamFromStandingEntry(b);
-
-    const aName = aTeam.displayName || aTeam.name || '';
-    const bName = bTeam.displayName || bTeam.name || '';
+    const aName = getTeamNameFromStandingEntry(a);
+    const bName = getTeamNameFromStandingEntry(b);
 
     return bStats.points - aStats.points ||
       bStats.goalDifference - aStats.goalDifference ||
@@ -791,13 +804,13 @@ function sortStandingsEntries(entries) {
   });
 }
 
-function getTeamFromStandingEntry(entry) {
-  return entry.team || entry;
-}
-
 function getStandingsGroups(data) {
   if (Array.isArray(data.children) && data.children.length) {
     return data.children;
+  }
+
+  if (Array.isArray(data.groups) && data.groups.length) {
+    return data.groups;
   }
 
   if (Array.isArray(data.standings) && data.standings.length) {
@@ -815,10 +828,41 @@ function getStandingsGroups(data) {
 }
 
 function getStandingsEntries(group) {
-  return group.standings?.entries ||
-    group.entries ||
-    group.children?.flatMap(child => child.standings?.entries || child.entries || []) ||
-    [];
+  if (Array.isArray(group.standings?.entries)) {
+    return group.standings.entries;
+  }
+
+  if (Array.isArray(group.entries)) {
+    return group.entries;
+  }
+
+  if (Array.isArray(group.children)) {
+    return group.children.flatMap(child => {
+      if (Array.isArray(child.standings?.entries)) return child.standings.entries;
+      if (Array.isArray(child.entries)) return child.entries;
+      return [];
+    });
+  }
+
+  return [];
+}
+
+function collectStandingsLogos(data) {
+  const groups = getStandingsGroups(data);
+
+  groups.forEach(group => {
+    const entries = getStandingsEntries(group);
+
+    entries.forEach(entry => {
+      const team = getTeamFromStandingEntry(entry);
+      const teamName = getTeamNameFromStandingEntry(entry);
+      const logo = team.logo || team.logos?.[0]?.href || '';
+
+      if (teamName && logo) {
+        espnTeamLogoMap.set(getTeamKey(teamName), logo);
+      }
+    });
+  });
 }
 
 function renderStandings(data) {
@@ -828,14 +872,16 @@ function renderStandings(data) {
   const groups = getStandingsGroups(data);
 
   if (!groups.length) {
-    grid.innerHTML = '<div class="empty-state">No standings returned yet.</div>';
+    grid.innerHTML = '<div class="empty-state">ESPN returned data, but no group tables were found.</div>';
     return;
   }
 
   const html = groups.map((group, index) => {
-    const groupName = group.name ||
+    const groupName =
+      group.name ||
       group.displayName ||
       group.shortName ||
+      group.abbreviation ||
       `Group ${String.fromCharCode(65 + index)}`;
 
     const entries = sortStandingsEntries(getStandingsEntries(group));
@@ -843,20 +889,13 @@ function renderStandings(data) {
     if (!entries.length) return '';
 
     const rows = entries.map(entry => {
-      const team = getTeamFromStandingEntry(entry);
-      const teamName = normaliseTeamName(team.displayName || team.name || team.shortDisplayName || 'Team');
+      const teamName = getTeamNameFromStandingEntry(entry);
       const owner = findOwner(teamName);
-
       const stats = getStandingStats(entry);
 
-      const played = stats.played;
-      const wins = stats.wins;
-      const draws = stats.draws;
-      const losses = stats.losses;
-      const points = stats.points;
-      const goalDifference = stats.goalDifference;
-
-      const gdText = goalDifference > 0 ? `+${goalDifference}` : goalDifference;
+      const gdText = stats.goalDifference > 0
+        ? `+${stats.goalDifference}`
+        : stats.goalDifference;
 
       return `
         <tr>
@@ -866,17 +905,19 @@ function renderStandings(data) {
               <span class="standing-team-name">${teamName}</span>
             </div>
           </td>
+
           <td>
             <span class="owner-pill" style="color:${owner?.color || '#667085'}">
               ${owner ? owner.name : 'Unassigned'}
             </span>
           </td>
-          <td>${played}</td>
-          <td>${wins}</td>
-          <td>${draws}</td>
-          <td>${losses}</td>
-          <td class="${goalDifference < 0 ? 'negative-gd' : 'positive-gd'}">${gdText}</td>
-          <td><strong>${points}</strong></td>
+
+          <td>${stats.played}</td>
+          <td>${stats.wins}</td>
+          <td>${stats.draws}</td>
+          <td>${stats.losses}</td>
+          <td class="${stats.goalDifference < 0 ? 'negative-gd' : 'positive-gd'}">${gdText}</td>
+          <td><strong>${stats.points}</strong></td>
         </tr>
       `;
     }).join('');
@@ -917,13 +958,21 @@ async function loadStandings() {
 
   try {
     const standings = await fetchEspnStandings();
+
+    console.log('ESPN standings data:', standings);
+
     collectStandingsLogos(standings);
     renderStandings(standings);
   } catch (standingsError) {
-    console.warn('ESPN standings failed.', standingsError);
+    console.error('ESPN standings failed:', standingsError);
 
     if (grid) {
-      grid.innerHTML = '<div class="empty-state">Standings unavailable right now. Fixtures are still working.</div>';
+      grid.innerHTML = `
+        <div class="empty-state">
+          Standings unavailable right now. Fixtures are still working.<br>
+          <small>${standingsError.message}</small>
+        </div>
+      `;
     }
   }
 }
