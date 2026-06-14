@@ -740,6 +740,51 @@ function getStatValue(entry, statNames) {
 
   return 0;
 }
+function statNumber(value) {
+  if (value === undefined || value === null || value === '') return 0;
+
+  const cleaned = String(value)
+    .replace('+', '')
+    .replace('%', '')
+    .trim();
+
+  const number = Number(cleaned);
+  return Number.isNaN(number) ? 0 : number;
+}
+
+function getStandingStats(entry) {
+  const played = statNumber(getStatValue(entry, ['gamesPlayed', 'GP', 'Games Played']));
+  const wins = statNumber(getStatValue(entry, ['wins', 'W', 'Wins']));
+  const draws = statNumber(getStatValue(entry, ['ties', 'draws', 'D', 'Draws']));
+  const losses = statNumber(getStatValue(entry, ['losses', 'L', 'Losses']));
+  const points = statNumber(getStatValue(entry, ['points', 'PTS', 'Points']));
+  const goalDifference = statNumber(getStatValue(entry, ['pointDifferential', 'goalDifferential', 'GD', 'Goal Difference']));
+  const goalsFor = statNumber(getStatValue(entry, ['pointsFor', 'goalsFor', 'GF', 'Goals For']));
+
+  return {
+    played,
+    wins,
+    draws,
+    losses,
+    points,
+    goalDifference,
+    goalsFor
+  };
+}
+
+function sortStandingsEntries(entries) {
+  return [...entries].sort((a, b) => {
+    const aStats = getStandingStats(a);
+    const bStats = getStandingStats(b);
+
+    return bStats.points - aStats.points ||
+      bStats.goalDifference - aStats.goalDifference ||
+      bStats.goalsFor - aStats.goalsFor ||
+      bStats.wins - aStats.wins ||
+      getTeamFromStandingEntry(a).displayName?.localeCompare(getTeamFromStandingEntry(b).displayName || '') ||
+      0;
+  });
+}
 
 function getTeamFromStandingEntry(entry) {
   return entry.team || entry;
@@ -772,7 +817,7 @@ function getStandingsEntries(group) {
 }
 
 function renderStandings(data) {
-  const grid = document.getElementById('standingsGrid');
+  const entries = sortStandingsEntries(getStandingsEntries(group));
   if (!grid) return;
 
   const groups = getStandingsGroups(data);
@@ -796,16 +841,16 @@ function renderStandings(data) {
       const team = getTeamFromStandingEntry(entry);
       const teamName = normaliseTeamName(team.displayName || team.name || team.shortDisplayName || 'Team');
       const owner = findOwner(teamName);
+const stats = getStandingStats(entry);
 
-      const played = getStatValue(entry, ['gamesPlayed', 'GP', 'Games Played']);
-      const wins = getStatValue(entry, ['wins', 'W', 'Wins']);
-      const draws = getStatValue(entry, ['ties', 'draws', 'D', 'Draws']);
-      const losses = getStatValue(entry, ['losses', 'L', 'Losses']);
-      const points = getStatValue(entry, ['points', 'PTS', 'Points']);
-      const goalDifference = getStatValue(entry, ['pointDifferential', 'goalDifferential', 'GD', 'Goal Difference']);
+const played = stats.played;
+const wins = stats.wins;
+const draws = stats.draws;
+const losses = stats.losses;
+const points = stats.points;
+const goalDifference = stats.goalDifference;
 
-      const gdNumber = Number(goalDifference);
-      const gdText = gdNumber > 0 ? `+${gdNumber}` : goalDifference;
+const gdText = goalDifference > 0 ? `+${goalDifference}` : goalDifference;
 
       return `
         <tr>
@@ -824,7 +869,7 @@ function renderStandings(data) {
           <td>${wins}</td>
           <td>${draws}</td>
           <td>${losses}</td>
-          <td class="${gdNumber < 0 ? 'negative-gd' : 'positive-gd'}">${gdText}</td>
+          <td class="${goalDifference < 0 ? 'negative-gd' : 'positive-gd'}">${gdText}</td>
           <td><strong>${points}</strong></td>
         </tr>
       `;
