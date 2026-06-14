@@ -777,12 +777,17 @@ function sortStandingsEntries(entries) {
     const aStats = getStandingStats(a);
     const bStats = getStandingStats(b);
 
+    const aTeam = getTeamFromStandingEntry(a);
+    const bTeam = getTeamFromStandingEntry(b);
+
+    const aName = aTeam.displayName || aTeam.name || '';
+    const bName = bTeam.displayName || bTeam.name || '';
+
     return bStats.points - aStats.points ||
       bStats.goalDifference - aStats.goalDifference ||
       bStats.goalsFor - aStats.goalsFor ||
       bStats.wins - aStats.wins ||
-      getTeamFromStandingEntry(a).displayName?.localeCompare(getTeamFromStandingEntry(b).displayName || '') ||
-      0;
+      aName.localeCompare(bName);
   });
 }
 
@@ -817,7 +822,7 @@ function getStandingsEntries(group) {
 }
 
 function renderStandings(data) {
-  const entries = sortStandingsEntries(getStandingsEntries(group));
+  const grid = document.getElementById('standingsGrid');
   if (!grid) return;
 
   const groups = getStandingsGroups(data);
@@ -833,7 +838,7 @@ function renderStandings(data) {
       group.shortName ||
       `Group ${String.fromCharCode(65 + index)}`;
 
-    const entries = getStandingsEntries(group);
+    const entries = sortStandingsEntries(getStandingsEntries(group));
 
     if (!entries.length) return '';
 
@@ -841,16 +846,17 @@ function renderStandings(data) {
       const team = getTeamFromStandingEntry(entry);
       const teamName = normaliseTeamName(team.displayName || team.name || team.shortDisplayName || 'Team');
       const owner = findOwner(teamName);
-const stats = getStandingStats(entry);
 
-const played = stats.played;
-const wins = stats.wins;
-const draws = stats.draws;
-const losses = stats.losses;
-const points = stats.points;
-const goalDifference = stats.goalDifference;
+      const stats = getStandingStats(entry);
 
-const gdText = goalDifference > 0 ? `+${goalDifference}` : goalDifference;
+      const played = stats.played;
+      const wins = stats.wins;
+      const draws = stats.draws;
+      const losses = stats.losses;
+      const points = stats.points;
+      const goalDifference = stats.goalDifference;
+
+      const gdText = goalDifference > 0 ? `+${goalDifference}` : goalDifference;
 
       return `
         <tr>
