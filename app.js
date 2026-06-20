@@ -150,6 +150,10 @@ const manualDraw = {
     'Curaçao'
   ]
 };
+//knockout map
+const manuallyKnockedOutTeams = [
+  'Turkey'
+];
 
 const prizeRules = {
   winner: 40,
@@ -562,6 +566,13 @@ function calculateTeamStats(events) {
       stillIn: true
     });
   });
+  manuallyKnockedOutTeams.forEach(team => {
+  const stat = teamStats.get(getTeamKey(team));
+
+  if (stat) {
+    stat.stillIn = false;
+  }
+});
 
   events.forEach(event => {
     const state = event.status?.type?.state;
