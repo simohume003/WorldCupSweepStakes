@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World Cup Bracket | Hume Sweepstake</title>
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <meta name="theme-color" content="#0f8a3a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Hume WC 2026">
+</head>
+
+<body>
+  <div class="api-status" id="bracketStatus">
+    <span class="status-dot status-checking"></span>
+    <span id="bracketStatusText">Checking bracket data...</span>
+  </div>
+
+  <main class="page-shell">
+    <section class="hero compact-hero">
+      <div class="hero-ball" aria-hidden="true">🏆</div>
+
+      <div>
+        <p class="eyebrow">Family game dashboard</p>
+        <h1>Knockout Bracket</h1>
+        <p class="hero-subtitle">
+          Live World Cup knockout tracker with owners, scores and routes to the final.
+        </p>
+
+        <div class="bracket-nav">
+          <a class="quick-link" href="index.html">← Back to Dashboard</a>
+          <a class="quick-link" href="premier-league.html">Premier League Players</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="summary-grid bracket-summary-grid">
+      <article class="summary-card featured">
+        <div class="summary-icon green">✅</div>
+        <div>
+          <p>Qualified So Far</p>
+          <strong id="qualifiedCount">0</strong>
+          <span>teams confirmed into the knockouts</span>
+        </div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon blue">⚽</div>
+        <div>
+          <p>Knockout Matches</p>
+          <strong id="knockoutMatchCount">0</strong>
+          <span>currently returned by ESPN</span>
+        </div>
+      </article>
+
+      <article class="summary-card prize-card">
+        <div class="summary-icon gold">🏆</div>
+        <div>
+          <p>Bracket Status</p>
+          <strong>Live Test Page</strong>
+          <span>using ESPN knockout fixtures when available</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel full-width">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Early qualification watch</p>
+          <h2>Qualified So Far</h2>
+        </div>
+        <span class="date-pill">Manual for now</span>
+      </div>
+
+      <div id="qualifiedTeams" class="qualified-team-grid"></div>
+    </section>
+
+    <section class="panel full-width espn-bracket-panel">
+      <div class="section-head espn-bracket-head">
+        <div>
+          <p class="eyebrow">Bracket view</p>
+          <h2>World Cup Knockout Tree</h2>
+        </div>
+        <span class="date-pill">ESPN-style layout</span>
+      </div>
+
+      <div id="bracketNotice" class="bracket-notice">
+        Checking ESPN for knockout fixtures...
+      </div>
+
+      <div class="espn-bracket-scroller">
+        <div id="bracketBoard" class="espn-bracket-board"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="bracket.js"></script>
+</body>
+</html>

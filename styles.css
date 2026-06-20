@@ -1074,3 +1074,252 @@ body {
     white-space: normal;
   }
 }
+/* =========================
+   ESPN-STYLE BRACKET PAGE
+========================= */
+
+.espn-bracket-panel {
+  background: #f7f8fa;
+}
+
+.bracket-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.bracket-summary-grid {
+  margin-bottom: 22px;
+}
+
+.qualified-team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.qualified-team-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.qualified-team-card img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.qualified-team-card strong,
+.qualified-team-card span {
+  display: block;
+}
+
+.qualified-team-card span {
+  margin-top: 3px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.qualified-badge {
+  margin-left: auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #e9f8ee;
+  color: #0f8a3a !important;
+  font-size: 0.7rem !important;
+  font-weight: 900 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.bracket-notice {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid #dbe3eb;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #475467;
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.espn-bracket-scroller {
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.espn-bracket-board {
+  display: grid;
+  grid-template-columns: repeat(6, 240px);
+  gap: 26px;
+  min-width: 1560px;
+  align-items: start;
+}
+
+.espn-round {
+  min-width: 0;
+  position: relative;
+}
+
+.espn-round-title {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #667085;
+  margin-bottom: 12px;
+}
+
+.espn-round-column {
+  display: grid;
+  gap: 14px;
+}
+
+.espn-round-round16 .espn-round-column {
+  gap: 42px;
+  padding-top: 30px;
+}
+
+.espn-round-quarters .espn-round-column {
+  gap: 102px;
+  padding-top: 82px;
+}
+
+.espn-round-semis .espn-round-column {
+  gap: 228px;
+  padding-top: 185px;
+}
+
+.espn-round-final .espn-round-column {
+  gap: 0;
+  padding-top: 320px;
+}
+
+.espn-round-third .espn-round-column {
+  gap: 0;
+  padding-top: 380px;
+}
+
+.espn-match-card {
+  position: relative;
+  border: 1px solid #dadfe6;
+  border-radius: 10px;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+.espn-round:not(.espn-round-final):not(.espn-round-third) .espn-match-card::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -26px;
+  width: 26px;
+  height: 2px;
+  background: #d0d5dd;
+  transform: translateY(-50%);
+}
+
+.espn-match-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 10px;
+  border-bottom: 1px solid #edf1f5;
+  background: #fafbfc;
+  color: #667085;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.espn-team-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  min-height: 54px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #edf1f5;
+}
+
+.espn-team-row:last-child {
+  border-bottom: none;
+}
+
+.espn-team-row-winner {
+  background: #eefaf2;
+}
+
+.espn-team-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.espn-team-left img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.espn-team-left strong,
+.espn-team-left span {
+  display: block;
+}
+
+.espn-team-left strong {
+  color: #172033;
+  font-size: 0.8rem;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 145px;
+}
+
+.espn-team-left span {
+  margin-top: 2px;
+  font-size: 0.69rem;
+  font-weight: 850;
+}
+
+.espn-team-score {
+  color: #172033;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.espn-placeholder-card {
+  opacity: 0.86;
+}
+
+.espn-team-tbd strong,
+.espn-team-tbd span {
+  color: #98a2b3 !important;
+}
+
+@media (max-width: 900px) {
+  .qualified-team-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .qualified-team-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .espn-bracket-board {
+    grid-template-columns: repeat(6, 220px);
+    min-width: 1420px;
+  }
+}
