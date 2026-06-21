@@ -3,7 +3,7 @@ const ESPN_KNOCKOUT_URL =
 
 const confirmedQualifiers = [
   'Mexico',
-  'USA'
+  'USA','Germany'
 ];
 
 const teamOwners = {
