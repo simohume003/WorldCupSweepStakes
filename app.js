@@ -152,7 +152,7 @@ const manualDraw = {
 };
 //knockout map
 const manuallyKnockedOutTeams = [
-  'Turkey','Haiti','Tunisia'
+  'Turkey','Haiti','Tunisia','Jordan'
 ];
 
 const prizeRules = {
