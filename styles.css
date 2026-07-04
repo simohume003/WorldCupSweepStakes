@@ -1323,3 +1323,118 @@ body {
     min-width: 1420px;
   }
 }
+/* Knocked-out team pills */
+.draw-team-chip.team-knocked-out {
+  background: #fff1f1;
+  border-color: #f3aaaa;
+  color: #b42318;
+  opacity: 0.82;
+}
+
+.draw-team-chip.team-knocked-out img {
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+
+.draw-team-chip.team-knocked-out > span:nth-child(2) {
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+
+.out-badge {
+  margin-left: auto;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: #d92d20;
+  color: #ffffff;
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+/* Worst Team prize tile */
+.worst-team-tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0 0 14px;
+  padding: 13px 14px;
+  border: 1px solid #f3c9c5;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #fff6f5, #fffafb);
+}
+
+.worst-team-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.worst-team-main img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: grayscale(0.15);
+}
+
+.worst-team-label {
+  display: block;
+  margin-bottom: 3px;
+  color: #b42318;
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.worst-team-main strong {
+  display: block;
+  color: #172033;
+  font-size: 0.95rem;
+}
+
+.worst-team-owner {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.worst-team-stats {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  color: #7a271a;
+  font-size: 0.76rem;
+  text-align: right;
+}
+
+.worst-team-stats span {
+  display: block;
+}
+
+.worst-team-stats strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.worst-team-loading {
+  color: #667085;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .worst-team-tile {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .worst-team-stats {
+    text-align: left;
+  }
+}

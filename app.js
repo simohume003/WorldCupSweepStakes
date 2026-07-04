@@ -150,10 +150,42 @@ const manualDraw = {
     'Curaçao'
   ]
 };
-//knockout map
+//knockout map 4thjuly
 const manuallyKnockedOutTeams = [
-  'Turkey','Haiti','Tunisia','Jordan','South Korea','Czechia','Qatar','Scotland','Curaçao','Iran','New Zealand','Uruguay','Saudi Arabia','Iraq','Uzbekistan','Panama'
+'Czechia',
+  'South Korea',
+  'Qatar',
+  'Haiti',
+  'Scotland',
+  'Turkey',
+  'Curaçao',
+  'Tunisia',
+  'New Zealand',
+  'Iran',
+  'Uruguay',
+  'Saudi Arabia',
+  'Iraq',
+  'Jordan',
+  'Uzbekistan',
+  'Panama',
 
+  // Round of 32 exits
+  'Germany',
+  'Netherlands',
+  'Japan',
+  'Sweden',
+  'Ecuador',
+  'South Africa',
+  'Ivory Coast',
+  'Democratic Republic of the Congo',
+  'Senegal',
+  'Bosnia and Herzegovina',
+  'Austria',
+  'Croatia',
+  'Algeria',
+  'Australia',
+  'Cape Verde',
+  'Ghana'
 ];
 
 const prizeRules = {
@@ -633,12 +665,25 @@ function renderDraw(events) {
   }
 
   grid.innerHTML = players.map(player => {
-    const chips = player.teams.map(team => `
-      <span class="draw-team-chip" title="${team}">
-        <img src="${logoForName(team)}" alt="${team} logo" loading="lazy" onerror="this.src='https://flagcdn.com/w80/un.png'" />
-        <span>${team}</span>
-      </span>
-    `).join('');
+    const chips = player.teams.map(team => {
+  const isKnockedOut = teamStats.get(getTeamKey(team))?.stillIn === false;
+
+  return `
+    <span
+      class="draw-team-chip ${isKnockedOut ? 'team-knocked-out' : ''}"
+      title="${isKnockedOut ? `${team} — knocked out` : team}"
+    >
+      <img
+        src="${logoForName(team)}"
+        alt="${team} logo"
+        loading="lazy"
+        onerror="this.src='https://flagcdn.com/w80/un.png'"
+      />
+      <span>${team}</span>
+      ${isKnockedOut ? '<span class="out-badge">OUT</span>' : ''}
+    </span>
+  `;
+}).join('');
 
     return `
       <div class="draw-card">
@@ -876,6 +921,78 @@ function collectStandingsLogos(data) {
     });
   });
 }
+function renderWorstTeamTile(data) {
+  const tile = document.getElementById('worstTeamTile');
+  if (!tile) return;
+
+  const groupStageKeys = new Set(
+    groupStageKnockedOutTeams.map(team => getTeamKey(team))
+  );
+
+  const candidates = getStandingsGroups(data)
+    .flatMap(group => getStandingsEntries(group))
+    .map(entry => {
+      const teamName = getTeamNameFromStandingEntry(entry);
+      const stats = getStandingStats(entry);
+      const owner = findOwner(teamName);
+
+      return {
+        teamName,
+        owner,
+        points: stats.points,
+        goalDifference: stats.goalDifference,
+        goalsFor: stats.goalsFor
+      };
+    })
+    .filter(team => groupStageKeys.has(getTeamKey(team.teamName)));
+
+  if (!candidates.length) {
+    tile.innerHTML = `
+      <span class="worst-team-label">Worst Team Prize</span>
+      <span class="worst-team-loading">No eliminated group-stage teams found yet.</span>
+    `;
+    return;
+  }
+
+  candidates.sort((a, b) => {
+    return a.points - b.points ||
+      a.goalDifference - b.goalDifference ||
+      a.goalsFor - b.goalsFor ||
+      a.teamName.localeCompare(b.teamName);
+  });
+
+  const worst = candidates[0];
+
+  const gdText = worst.goalDifference > 0
+    ? `+${worst.goalDifference}`
+    : worst.goalDifference;
+
+  tile.innerHTML = `
+    <div class="worst-team-main">
+      <img
+        src="${logoForName(worst.teamName)}"
+        alt="${worst.teamName} flag"
+        onerror="this.src='https://flagcdn.com/w80/un.png'"
+      />
+
+      <div>
+        <span class="worst-team-label">Worst Team Prize · €15</span>
+        <strong>${worst.teamName}</strong>
+        <span
+          class="worst-team-owner"
+          style="color:${worst.owner?.color || '#667085'}"
+        >
+          ${worst.owner ? `${worst.owner.name}'s team` : 'Owner unavailable'}
+        </span>
+      </div>
+    </div>
+
+    <div class="worst-team-stats">
+      <span><strong>${worst.points}</strong> pts</span>
+      <span><strong>${gdText}</strong> GD</span>
+    </div>
+  `;
+}
 
 function renderStandings(data) {
   const grid = document.getElementById('standingsGrid');
@@ -975,6 +1092,7 @@ async function loadStandings() {
 
     collectStandingsLogos(standings);
     renderStandings(standings);
+    renderWorstTeamTile(standings);
   } catch (standingsError) {
     console.error('ESPN standings failed:', standingsError);
 
@@ -1026,4 +1144,6 @@ async function init() {
 }
 
 init();
+
+
 
