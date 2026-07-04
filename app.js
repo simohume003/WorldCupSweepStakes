@@ -186,7 +186,7 @@ const manuallyKnockedOutTeams = [
   'Australia',
   'Cape Verde',
   'Ghana',
-  'Canada'
+  'Canada','Paraguay'
 ];
 
 const prizeRules = {
