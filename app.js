@@ -929,9 +929,9 @@ function renderWorstTeamTile(data) {
   const tile = document.getElementById('worstTeamTile');
   if (!tile) return;
 
-  const groupStageKeys = new Set(
-    groupStageKnockedOutTeams.map(team => getTeamKey(team))
-  );
+  const knockedOutKeys = new Set(
+  manuallyKnockedOutTeams.map(team => getTeamKey(team))
+);
 
   const candidates = getStandingsGroups(data)
     .flatMap(group => getStandingsEntries(group))
@@ -948,7 +948,8 @@ function renderWorstTeamTile(data) {
         goalsFor: stats.goalsFor
       };
     })
-    .filter(team => groupStageKeys.has(getTeamKey(team.teamName)));
+    .filter(team => knockedOutKeys.has(getTeamKey(team.teamName)))
+.filter(team => team.points <= 3);
 
   if (!candidates.length) {
     tile.innerHTML = `
