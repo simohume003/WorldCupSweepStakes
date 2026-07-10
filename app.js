@@ -191,7 +191,10 @@ const manuallyKnockedOutTeams = [
   'Brazil',
   'Mexico',
   'Portugal',
-  'USA'
+  'USA',
+  'Colombia',
+  'Egypt',
+  'Morocco'
 ];
 
 const prizeRules = {
