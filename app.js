@@ -197,7 +197,8 @@ const manuallyKnockedOutTeams = [
   'Morocco',
   'Belgium',
   'Norway',
-  'Switzerland'
+  'Switzerland',
+  'France'
 ];
 
 const prizeRules = {
